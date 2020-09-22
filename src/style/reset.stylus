@@ -1,0 +1,12 @@
+html, body, div, ul, ol, li, h1, h2, h3, h4, h5, h6, p
+  margin: 0
+  padding: 0
+a
+  text-decoration: none
+  color: #333
+input
+  background: transparent
+  border: 0 none
+  box-sizing: border-box
+  &:focus
+    outline: none

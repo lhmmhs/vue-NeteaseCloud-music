@@ -1,0 +1,32 @@
+{
+  "name": "wy_music",
+  "version": "1.0.0",
+  "description": "NeteaseCloudMusic",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "set NODE_ENV=development&& webpack-dev-server --mode=development --open"
+  },
+  "author": "lhmmhs",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.20.0",
+    "vue": "^3.0.0-rc.12",
+    "vue-router": "^4.0.0-beta.10",
+    "vuex": "^4.0.0-beta.4"
+  },
+  "devDependencies": {
+    "@vue/compiler-sfc": "^3.0.0-rc.9",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "css-loader": "^4.3.0",
+    "html-webpack-plugin": "^4.4.1",
+    "mini-css-extract-plugin": "^0.11.2",
+    "stylus": "^0.54.8",
+    "stylus-loader": "^3.0.2",
+    "vue-loader": "^16.0.0-beta.5",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  }
+}
