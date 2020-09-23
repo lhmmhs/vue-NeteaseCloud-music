@@ -4,15 +4,14 @@
       <img :src="`${coverImgUrl}?param=200y200`" />
     </div>
     <div class="content">
-      <div class="title">{{name}}</div>
+      <h2 class="title">{{name}}</h2>
       <div class="creator">
         <img class="creator__avatar" :src="`${creator.avatarUrl}?param=40y40`" />
         <span class="creator__name">{{creator.nickname}}</span>
-        <span class="creator__birthday">{{formatDate(creator.birthday)}}</span>
       </div>
-      <div class="create">{{formatDate(createTime)}}</div>
-      <div class="tags">{{tags}}</div>
-      <div class="description">{{description}}</div>
+      <div class="create">{{formatDate(createTime)}}创建</div>
+      <div class="tags">标签：{{tags}}</div>
+      <!-- <div class="description">{{description}}</div> -->
     </div>
   </div>
 </template>
@@ -43,4 +42,23 @@ export default {
 .img-wrap
   width: 200px
   height: 200px
+.content
+  margin-left: 20px
+.title
+  font-size: 20px
+.creator
+  display: flex
+  align-items: center
+  margin-top: 10px
+.creator__avatar
+  width: 40px
+  height: 40px
+  margin-right: 10px
+  border-radius: 50%
+  overflow: hidden
+.create
+  margin-top: 10px
+.tags
+  margin-top: 10px
+  font-size: 14px
 </style>

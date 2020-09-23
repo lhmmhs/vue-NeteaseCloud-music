@@ -18,11 +18,13 @@ export default {
   setup() {
     const playlist = ref([]);
 
+    // method
     const getPlaylist = async () => {
       const { result } = await requestPlaylist();
       playlist.value = result;
     };
 
+    // lifecycle
     onMounted(getPlaylist);
 
     return {
