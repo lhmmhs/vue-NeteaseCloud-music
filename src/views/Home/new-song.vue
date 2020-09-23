@@ -1,9 +1,9 @@
 <template>
   <div class="new-song">
     <h3>最新音乐</h3>
-    <div class="new-song-list">
-      <songCard
-        v-bind="parseSong(song)"
+    <div class="list">
+      <song-card
+        v-bind="nomalizeSong(song)"
         :order="index"
         v-for="(song, index) in songs"
         :key="song.id"
@@ -15,10 +15,11 @@
 <script>
 import { onMounted, reactive, ref } from "vue";
 import { requestNewSong } from "@/api";
-import songCard from "@/components/songCard";
+import songCard from "@/components/song-card";
+import { nomalizeSong } from "@/utils";
 
 export default {
-  components: { newSongItem },
+  components: { songCard },
   setup() {
     const songs = ref([]);
 
@@ -28,26 +29,12 @@ export default {
       songs.value = result;
     };
 
-    const parseSong = (songData) => {
-      let {
-        name,
-        picUrl,
-        song: { artists },
-      } = songData;
-
-      return {
-        name,
-        picUrl,
-        singer: (artists || []).map((e) => e.name).join("/"),
-      };
-    };
-
     // lifecycle
     onMounted(getNewSongs);
 
     return {
       songs,
-      parseSong,
+      nomalizeSong,
     };
   },
 };
@@ -57,7 +44,7 @@ export default {
 <style lang="stylus" scoped>
 .new-song
   margin-top: 50px
-.new-song-list
+.list
   display: flex
   flex-wrap: wrap
   justify-content: space-between

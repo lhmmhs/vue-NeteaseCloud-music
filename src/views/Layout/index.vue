@@ -2,7 +2,6 @@
   <div class="layout">
     <layoutHeader />
     <layoutBody />
-
     <playBar />
   </div>
 </template>

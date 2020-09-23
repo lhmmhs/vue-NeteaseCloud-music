@@ -23,6 +23,5 @@ export default {
   padding: 50px 0 60px
 .page-content
   flex: 1
-  padding: 20px 100px
   overflow-y: auto
 </style>
