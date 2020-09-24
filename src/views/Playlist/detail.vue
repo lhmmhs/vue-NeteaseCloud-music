@@ -9,7 +9,7 @@
         <img class="creator__avatar" :src="`${creator.avatarUrl}?param=40y40`" />
         <span class="creator__name">{{creator.nickname}}</span>
       </div>
-      <div class="create">{{formatDate(createTime)}}创建</div>
+      <div class="create">{{formatDate(createTime)}} 创建</div>
       <div class="tags">标签：{{tags}}</div>
       <!-- <div class="description">{{description}}</div> -->
     </div>

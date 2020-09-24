@@ -48,7 +48,7 @@ export function nomalizePlaylistDetail(data) {
   }
 }
 
-function getArtists(artists) {
+export function getArtists(artists) {
   return (artists || []).map((e) => e.name).join("/")
 }
 
@@ -61,15 +61,30 @@ function formatPlayCount(count) {
   }
 }
 
-export function formatDate(timestamp) {
-  let date = new Date(timestamp)
+export function formatDate(s) {
+  let date = new Date(s)
+  let time = new Date().getTime() - date.getTime()
+
   let years = date.getFullYear()
   let months = date.getMonth() + 1
   let day = date.getDate()
 
-  return addZero(years) + "-" + addZero(months) + "-" + addZero(day)
+  let hours = date.getHours()
+  let minutes = date.getMinutes()
+
+  if (time / 3600000 < 24) {
+    return addZero(hours) + ":" + addZero(minutes)
+  } else {
+    return addZero(years) + "年" + addZero(months) + "月" + addZero(day)
+  }
 }
 
 function addZero(n) {
-  return n < 9 ? "0" + n : n + ""
+  return n < 10 ? "0" + n : n + ""
+}
+
+export function formatTime(duration) {
+  let minutes = Math.floor(duration / 1000 / 60)
+  let seconds = Math.floor(duration / 1000) % 60
+  return addZero(minutes) + ":" + addZero(seconds)
 }

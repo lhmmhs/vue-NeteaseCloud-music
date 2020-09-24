@@ -1,4 +1,4 @@
-html, body, div, ul, ol, li, h1, h2, h3, h4, h5, h6, p
+html, body, div, ul, ol, li, h1, h2, h3, h4, h5, h6, p, table, thead, tbody, tr, td
   margin: 0
   padding: 0
 a

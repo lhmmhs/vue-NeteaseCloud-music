@@ -1,43 +1,52 @@
 <template>
   <div class="playlist">
     <detail v-bind="nomalizePlaylistDetail(playlistDetail)" />
-    <div class="tab">
-      <span class="tab__item">歌曲列表</span>
-      <span class="tab__item">评论</span>
-      <span class="tab__item">收藏者</span>
-    </div>
-    <div class="list">
-      <song-table :songs="playlistDetail.tracks" />
-    </div>
+    <song-table :songs="playlistDetail.tracks" />
+    <comments :comments="playlistComments" :total="playlistCommentsTotal" />
   </div>
 </template>
 
 <script>
 import { onMounted, computed, ref } from "vue";
 import { useRoute } from "vue-router";
-import { requestPlaylistDetail } from "@/api";
+import { requestPlaylistDetail, requestPlaylistComments } from "@/api";
 import { nomalizePlaylistDetail } from "@/utils";
 import detail from "./detail";
-import songTable from "@/components/song-table";
+import songTable from "./song-table";
+import comments from "./comments";
 
 export default {
-  components: { detail, songTable },
+  components: { detail, songTable, comments },
   setup() {
     const {
       params: { id },
     } = useRoute();
 
     const playlistDetail = ref({});
+    const playlistComments = ref([]);
+    const playlistCommentsTotal = ref(0);
 
     const getPlaylistDetail = async () => {
       const { playlist } = await requestPlaylistDetail(id);
       playlistDetail.value = playlist;
     };
 
-    onMounted(getPlaylistDetail);
+    const getPlaylistComments = async () => {
+      const { comments, total } = await requestPlaylistComments(id, 20, 0);
+      playlistComments.value = comments;
+      playlistCommentsTotal.value = total;
+    };
+
+    onMounted(() => {
+      // getPlaylistDetail();
+      getPlaylistComments();
+    });
 
     return {
       playlistDetail,
+      playlistComments,
+      playlistCommentsTotal,
+
       nomalizePlaylistDetail,
     };
   },
@@ -48,7 +57,8 @@ export default {
 .playlist
   padding: 20px 40px
 .tab
-  margin: 30px 0 0 20px
+  margin-top: 20px
+  border-bottom: 2px solid #d33a31
 .tab__item
   margin: 0 15px
 </style>
