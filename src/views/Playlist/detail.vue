@@ -4,13 +4,13 @@
       <img :src="`${coverImgUrl}?param=200y200`" />
     </div>
     <div class="content">
-      <h2 class="title">{{name}}</h2>
+      <h2 class="title">{{ name }}</h2>
       <div class="creator">
         <img class="creator__avatar" :src="`${creator.avatarUrl}?param=40y40`" />
-        <span class="creator__name">{{creator.nickname}}</span>
+        <span class="creator__name">{{ creator.nickname }}</span>
       </div>
-      <div class="create">{{formatDate(createTime)}} 创建</div>
-      <div class="tags">标签：{{tags}}</div>
+      <div class="create">{{ formatDate(createTime) }} 创建</div>
+      <div class="tags">标签：{{ tags }}</div>
       <!-- <div class="description">{{description}}</div> -->
     </div>
   </div>
@@ -20,14 +20,7 @@
 import { formatDate } from "@/utils";
 
 export default {
-  props: [
-    "creator",
-    "coverImgUrl",
-    "createTime",
-    "description",
-    "name",
-    "tags",
-  ],
+  props: ["creator", "coverImgUrl", "createTime", "description", "name", "tags"],
   setup() {
     return {
       formatDate,

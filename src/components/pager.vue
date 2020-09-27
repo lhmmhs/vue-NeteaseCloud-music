@@ -1,36 +1,28 @@
 <template>
   <ul class="pager" @click="onPagerClick">
-    <li :class="{ active: data.currentPage === 1, disabled }" v-if="pageCount > 0" class="number">1</li>
-    <li class="el-icon more btn-quickprev" :class="[ { disabled }]" v-if="data.showPrevMore">...</li>
-    <li
-      v-for="pager in pagers"
-      :key="pager"
-      :class="{ active: data.currentPage === pager, disabled }"
-      class="number"
-    >{{ pager }}</li>
-    <li class="el-icon more btn-quicknext" :class="[ { disabled }]" v-if="data.showNextMore">...</li>
-    <li
-      :class="{ active: data.currentPage === pageCount, disabled }"
-      class="number"
-      v-if="pageCount > 1"
-    >{{ pageCount }}</li>
+    <li :class="{ active: data.currentPage === 1 }" v-if="pageCount > 0" class="number">1</li>
+    <li class="more btn-quickprev" v-if="data.showPrevMore">...</li>
+    <li v-for="pager in pagers" :key="pager" :class="{ active: data.currentPage === pager }" class="number">
+      {{ pager }}
+    </li>
+    <li class="more btn-quicknext" v-if="data.showNextMore">...</li>
+    <li :class="{ active: data.currentPage === pageCount }" class="number" v-if="pageCount > 1">
+      {{ pageCount }}
+    </li>
   </ul>
 </template>
 
 <script>
-import { reactive, ref, watch, computed } from "vue";
+import { reactive, ref, nextTick, computed, watch } from "vue";
 
 export default {
   props: {
-    // currentPage: Number,
     // 总页数
     pageCount: Number,
-    // 显示的页码数量
-    // 大于等于 5 且小于等于 21 的奇数
     pagerCount: Number,
     disabled: Boolean,
   },
-  setup(props) {
+  setup(props, { emit }) {
     const data = reactive({
       showPrevMore: false,
       showNextMore: false,
@@ -89,10 +81,10 @@ export default {
         }
       }
 
-      data.showPrevMore = showPrevMore;
-      data.showNextMore = showNextMore;
-
-      console.log(data);
+      nextTick(() => {
+        data.showPrevMore = showPrevMore;
+        data.showNextMore = showNextMore;
+      });
 
       return array;
     });
@@ -117,8 +109,6 @@ export default {
         }
       }
 
-      console.log(newPage);
-
       if (!isNaN(newPage)) {
         if (newPage < 1) {
           newPage = 1;
@@ -129,10 +119,17 @@ export default {
       }
 
       if (newPage !== currentPage) {
-        // this.$emit("change", newPage);
         data.currentPage = newPage;
       }
     }
+
+    // watch
+    watch(
+      () => data.currentPage,
+      (page) => {
+        emit("currentPage", page);
+      }
+    );
 
     return {
       data,
@@ -150,12 +147,14 @@ export default {
   user-select: none
   list-style: none
   font-size: 0
+  text-align: center
+  margin-top: 25px
   li
     padding: 0 4px
     background: #fff
     vertical-align: top
     display: inline-block
-    font-size: 13px
+    font-size: 14px
     min-width: 35.5px
     height: 28px
     line-height: 28px
@@ -163,6 +162,8 @@ export default {
     box-sizing: border-box
     text-align: center
     margin: 0
+    font-weight: 700
     &.active
       color: #d33a31
+      cursor: default
 </style>

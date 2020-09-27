@@ -2,12 +2,12 @@
   <div class="playlist">
     <detail v-bind="nomalizePlaylistDetail(playlistDetail)" />
     <song-table :songs="playlistDetail.tracks" />
-    <comments :comments="playlistComments" :total="playlistCommentsTotal" />
+    <comments :comments="playlistComments" :hotComments="playlistHotComments" :total="playlistCommentsTotal" />
   </div>
 </template>
 
 <script>
-import { onMounted, computed, ref } from "vue";
+import { onMounted, computed, ref, provide } from "vue";
 import { useRoute } from "vue-router";
 import { requestPlaylistDetail, requestPlaylistComments } from "@/api";
 import { nomalizePlaylistDetail } from "@/utils";
@@ -24,6 +24,7 @@ export default {
 
     const playlistDetail = ref({});
     const playlistComments = ref([]);
+    const playlistHotComments = ref([]);
     const playlistCommentsTotal = ref(0);
 
     const getPlaylistDetail = async () => {
@@ -31,21 +32,31 @@ export default {
       playlistDetail.value = playlist;
     };
 
-    const getPlaylistComments = async () => {
-      const { comments, total } = await requestPlaylistComments(id, 20, 0);
+    const getPlaylistComments = async (id, page) => {
+      const { comments, hotComments, total } = await requestPlaylistComments(id, 20, page);
       playlistComments.value = comments;
+      playlistHotComments.value = hotComments;
       playlistCommentsTotal.value = total;
     };
 
     onMounted(() => {
-      // getPlaylistDetail();
-      getPlaylistComments();
+      getPlaylistDetail();
+      getPlaylistComments(id, 1);
     });
+
+    const getPlaylistCommentsWrapper = (id) => {
+      return function (page) {
+        getPlaylistComments(id, page);
+      };
+    };
+
+    provide("getPlaylistComments", getPlaylistCommentsWrapper(id));
 
     return {
       playlistDetail,
       playlistComments,
       playlistCommentsTotal,
+      playlistHotComments,
 
       nomalizePlaylistDetail,
     };
