@@ -1,30 +1,69 @@
 <template>
   <div class="comments">
-    <div class="list" v-if="hotComments && hotComments.length">
+    <div class="list" v-if="data.hotComments && data.hotComments.length">
       <h3 class="title">精彩评论</h3>
-      <comment :comments="hotComments" />
+      <comment :comments="data.hotComments" />
     </div>
-    <div class="list" v-if="comments && comments.length">
-      <h3 class="title">最新评论（{{ total }}）</h3>
-      <comment :comments="comments" />
+    <div class="list" v-if="data.comments && data.comments.length">
+      <h3 class="title">最新评论（{{ commentsTotal }}）</h3>
+      <comment :comments="data.comments" />
     </div>
   </div>
-  <pager @currentPage="getPlaylistComments" :pageCount="Math.ceil(total / 20)" :pagerCount="7" />
+  <pager @currentPage="currentPageChange" :pageCount="Math.ceil(commentsTotal / 20)" :pagerCount="7" />
 </template>
 
 <script>
-import { inject } from "vue";
+import { inject, onMounted, reactive, ref } from "vue";
 import pager from "@/components/pager";
 import comment from "@/components/comment";
+import { requestPlaylistComments, requestMvComments } from "@/api";
+
+const SONG_TYPE = "song";
+const PLAYLIST_TYPE = "playlist";
+const MV_TYPE = "mv";
 
 export default {
-  props: ["comments", "total", "hotComments"],
+  props: ["id", "type"],
   components: { pager, comment },
   setup(props) {
-    const getPlaylistComments = inject("getPlaylistComments");
+    const commentRequestMap = {
+      [PLAYLIST_TYPE]: requestPlaylistComments,
+      // [SONG_TYPE]: requestSongComments,
+      [MV_TYPE]: requestMvComments,
+    };
+    console.log(props.type);
+    const commentRequest = commentRequestMap[props.type];
+
+    const data = reactive({
+      comments: [],
+      hotComments: [],
+    });
+
+    let commentsTotal = ref(0);
+
+    const getComments = async (id, page) => {
+      const { comments, hotComments, total } = await commentRequest(id, 20, page);
+      console.log(comments);
+      data.comments = comments;
+      data.hotComments = hotComments;
+      commentsTotal.value = total;
+    };
+
+    const currentPageChange = ((id) => {
+      return function (page) {
+        console.log("page", page);
+        commentRequest(id, page);
+      };
+    })(props.id);
+
+    onMounted(() => {
+      getComments(props.id, 1);
+    });
 
     return {
-      getPlaylistComments,
+      data,
+      commentsTotal,
+      currentPageChange,
     };
   },
 };

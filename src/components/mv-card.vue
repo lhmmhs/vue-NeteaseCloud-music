@@ -1,11 +1,13 @@
 <template>
   <div class="mv-card">
-    <div class="play-count">{{playCount}}</div>
+    <div class="play-count">{{ playCount }}</div>
     <div class="img-wrap">
-      <img class="mv-img" :src="`${picUrl}?param=500y260`" />
-      <div class="play-icon-wrap">
-        <i class="play-icon iconfont icon-play"></i>
-      </div>
+      <router-link :to="`/mv/${id}`">
+        <img class="mv-img" :src="`${picUrl}?param=500y260`" />
+        <div class="play-icon-wrap">
+          <i class="play-icon iconfont icon-play"></i>
+        </div>
+      </router-link>
     </div>
     <div class="mv-content">
       <p :title="name" class="mv-name">{{ name }}</p>
@@ -16,7 +18,7 @@
 
 <script>
 export default {
-  props: ["picUrl", "name", "artists", "playCount"],
+  props: ["id", "picUrl", "name", "artists", "playCount"],
 };
 </script>
 

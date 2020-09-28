@@ -13,9 +13,10 @@ export function nomalizeSong(data) {
 }
 
 export function nomalizeMv(data) {
-  let { name, picUrl, artists, playCount } = data;
+  let { id, name, picUrl, artists, playCount } = data;
 
   return {
+    id,
     name,
     picUrl,
     artists: getArtists(artists),
@@ -32,19 +33,6 @@ export function nomalizePlaylist(data) {
     picUrl,
     copywriter,
     playCount: formatPlayCount(playCount),
-  };
-}
-
-export function nomalizePlaylistDetail(data) {
-  let { coverImgUrl, creator, createTime, description, name, tags } = data;
-
-  return {
-    creator,
-    coverImgUrl,
-    createTime,
-    description,
-    name,
-    tags: (tags || []).map((e) => e).join("/"),
   };
 }
 

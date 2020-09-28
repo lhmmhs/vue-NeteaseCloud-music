@@ -20,7 +20,6 @@ export default {
     // 总页数
     pageCount: Number,
     pagerCount: Number,
-    disabled: Boolean,
   },
   setup(props, { emit }) {
     const data = reactive({
@@ -93,7 +92,7 @@ export default {
     function onPagerClick(event) {
       const target = event.target;
 
-      if (target.tagName === "UL" || data.disabled) return;
+      if (target.tagName === "UL") return;
 
       let newPage = Number(event.target.textContent);
       const pageCount = props.pageCount;
@@ -127,6 +126,7 @@ export default {
     watch(
       () => data.currentPage,
       (page) => {
+        console.log(page);
         emit("currentPage", page);
       }
     );

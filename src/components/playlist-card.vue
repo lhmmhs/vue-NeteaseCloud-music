@@ -1,12 +1,14 @@
 <template>
-  <div class="playlist-card" @click="onClickCard">
-    <div class="play-count">{{playCount}}</div>
+  <div class="playlist-card">
+    <div class="play-count">{{ playCount }}</div>
     <div class="img-wrap">
-      <img class="playlist-img" :src="`${picUrl}?param=300y300`" />
-      <div class="play-icon-wrap">
-        <i class="play-icon iconfont icon-play"></i>
-      </div>
-      <p class="copywriter">{{copywriter}}</p>
+      <router-link :to="`/playlist/${id}`">
+        <img class="playlist-img" :src="`${picUrl}?param=300y300`" />
+        <div class="play-icon-wrap">
+          <i class="play-icon iconfont icon-play"></i>
+        </div>
+        <p class="copywriter">{{ copywriter }}</p>
+      </router-link>
     </div>
     <div class="playlist-content">
       <p :title="name" class="playlist-name">{{ name }}</p>
@@ -19,17 +21,6 @@ import { useRouter } from "vue-router";
 
 export default {
   props: ["id", "name", "picUrl", "copywriter", "playCount"],
-  setup(props) {
-    const router = useRouter();
-
-    const onClickCard = () => {
-      router.push(`/playlist/${props.id}`);
-    };
-
-    return {
-      onClickCard,
-    };
-  },
 };
 </script>
 

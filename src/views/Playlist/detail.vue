@@ -1,16 +1,16 @@
 <template>
-  <div class="detail" v-if="coverImgUrl">
+  <div class="detail" v-if="playlistDetail.coverImgUrl">
     <div class="img-wrap">
-      <img :src="`${coverImgUrl}?param=200y200`" />
+      <img :src="`${playlistDetail.coverImgUrl}?param=200y200`" />
     </div>
     <div class="content">
-      <h2 class="title">{{ name }}</h2>
+      <h2 class="title">{{ playlistDetail.name }}</h2>
       <div class="creator">
-        <img class="creator__avatar" :src="`${creator.avatarUrl}?param=40y40`" />
-        <span class="creator__name">{{ creator.nickname }}</span>
+        <img class="creator__avatar" :src="`${playlistDetail.creator.avatarUrl}?param=40y40`" />
+        <span class="creator__name">{{ playlistDetail.creator.nickname }}</span>
       </div>
-      <div class="create">{{ formatDate(createTime) }} 创建</div>
-      <div class="tags">标签：{{ tags }}</div>
+      <div class="create">{{ formatDate(playlistDetail.createTime) }} 创建</div>
+      <div class="tags">标签：{{ (playlistDetail.tags || []).map((e) => e).join("/") }}</div>
       <!-- <div class="description">{{description}}</div> -->
     </div>
   </div>
@@ -20,8 +20,8 @@
 import { formatDate } from "@/utils";
 
 export default {
-  props: ["creator", "coverImgUrl", "createTime", "description", "name", "tags"],
-  setup() {
+  props: ["playlistDetail"],
+  setup(props) {
     return {
       formatDate,
     };
