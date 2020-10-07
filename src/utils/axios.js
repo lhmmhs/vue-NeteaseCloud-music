@@ -1,24 +1,23 @@
-import axios from "axios"
+import axios from "axios";
 
-const BASE_URL = "http://localhost:3000"
+const BASE_URL = "http://localhost:3000";
 
 function createBaseInstance() {
   const instance = axios.create({
     baseURL: BASE_URL,
-  })
+  });
 
-  instance.interceptors.response.use(handleResponse, handleError)
+  instance.interceptors.response.use(handleResponse, handleError);
 
-  return instance
+  return instance;
 }
 
 function handleError(e) {
-  confirm(e.message, "出错啦~")
-  throw e
+  throw e;
 }
 
 function handleResponse(response) {
-  return response.data
+  return response.data;
 }
 
-export const request = createBaseInstance()
+export const request = createBaseInstance();

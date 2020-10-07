@@ -24,23 +24,11 @@ export function nomalizeMv(data) {
   };
 }
 
-export function nomalizePlaylist(data) {
-  let { id, name, picUrl, copywriter, playCount } = data;
-
-  return {
-    id,
-    name,
-    picUrl,
-    copywriter,
-    playCount: formatPlayCount(playCount),
-  };
-}
-
 export function getArtists(artists) {
   return (artists || []).map((e) => e.name).join("/");
 }
 
-function formatPlayCount(count) {
+export function formatPlayCount(count) {
   if (count > 10000) {
     count = count / 10000 + "";
     return count.match(/\d+\.\d/)[0] + "万";

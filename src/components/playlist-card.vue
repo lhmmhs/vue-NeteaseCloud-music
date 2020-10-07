@@ -4,10 +4,10 @@
     <div class="img-wrap">
       <router-link :to="`/playlist/${id}`">
         <img class="playlist-img" :src="`${picUrl}?param=300y300`" />
-        <div class="play-icon-wrap">
+        <!-- <div class="play-icon-wrap">
           <i class="play-icon iconfont icon-play"></i>
-        </div>
-        <p class="copywriter">{{ copywriter }}</p>
+        </div> -->
+        <p class="copywriter" :title="copywriter">{{ copywriter || "" }}</p>
       </router-link>
     </div>
     <div class="playlist-content">
@@ -26,11 +26,15 @@ export default {
 
 <style lang="stylus" scoped>
 .playlist-card
+  float: left
   position: relative
   width: 19%
+  margin-right: 1%
   cursor: pointer
   &:nth-child(-n+5)
     margin-bottom: 20px
+  &:nth-child(5n+5)
+    margin-right: 0
 .play-count
   position: absolute
   top: 5px
@@ -71,6 +75,9 @@ export default {
   color: #fff
   padding: 5px
   background: rgba(0, 0, 0, 0.4)
+  white-space: nowrap
+  text-overflow: ellipsis
+  overflow: hidden
 .playlist-img
   display: block
   width: 100%

@@ -31,7 +31,6 @@ export default {
       // [SONG_TYPE]: requestSongComments,
       [MV_TYPE]: requestMvComments,
     };
-    console.log(props.type);
     const commentRequest = commentRequestMap[props.type];
 
     const data = reactive({

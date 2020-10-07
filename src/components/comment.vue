@@ -5,11 +5,11 @@
     </div>
     <div class="content">
       <p class="comment-content">
-        <span class="user-name">{{ comment.user.nickname }}：</span>
+        <router-link :to="`/user/${comment.user.userId}`" class="user-name">{{ comment.user.nickname }}：</router-link>
         <span class="text">{{ comment.content }}</span>
       </p>
       <div class="replied" v-if="comment.beReplied.length">
-        <span class="user-name">{{ comment.beReplied[0].user.nickname }}：</span>
+        <router-link :to="`/user/${comment.beReplied[0].user.userId}`" class="user-name">{{ comment.beReplied[0].user.nickname }}：</router-link>
         <span class="text">{{ comment.beReplied[0].content }}</span>
       </div>
       <div class="content-bar">

@@ -2,7 +2,15 @@
   <div class="playlist">
     <h3>推荐歌单</h3>
     <div class="list">
-      <playlist-card v-bind="nomalizePlaylist(item)" v-for="item in playlist" :key="item.id" />
+      <playlist-card
+        v-for="item in playlist"
+        :key="item.id"
+        :id="item.id"
+        :name="item.name"
+        :picUrl="item.picUrl"
+        :copywriter="item.copywriter"
+        :playCount="formatPlayCount(item.playCount)"
+      />
     </div>
   </div>
 </template>
@@ -11,7 +19,7 @@
 import { onMounted, reactive, ref } from "vue";
 import { requestPlaylist } from "@/api";
 import playlistCard from "@/components/playlist-card";
-import { nomalizePlaylist } from "@/utils";
+import { formatPlayCount } from "@/utils";
 
 export default {
   components: { playlistCard },
@@ -29,7 +37,7 @@ export default {
 
     return {
       playlist,
-      nomalizePlaylist,
+      formatPlayCount,
     };
   },
 };

@@ -1,3 +1,3 @@
 module.exports = {
-  printWidth: 200, // 超过最大值换行
+  printWidth: 100, // 超过最大值换行
 };

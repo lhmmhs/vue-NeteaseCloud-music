@@ -1,0 +1,193 @@
+<template>
+  <div
+    v-show="data.ready"
+    class="el-carousel__item"
+    :class="{
+      'is-active': data.active,
+      'el-carousel__item--card': type === 'card',
+      'is-in-stage': data.inStage,
+      'is-hover': data.hover,
+      'is-animating': data.animating,
+    }"
+    :style="itemStyle"
+    @click="handleItemClick"
+  >
+    <div v-if="type === 'card'" v-show="!data.active" class="el-carousel__mask"></div>
+    <slot></slot>
+  </div>
+</template>
+<script >
+import { defineComponent, reactive, onMounted, inject, computed, toRefs, getCurrentInstance } from "vue";
+
+const autoprefixer = function (style) {
+  const rules = ["transform", "transition", "animation"];
+  const prefixes = ["ms-", "webkit-"];
+  rules.forEach((rule) => {
+    const value = style[rule];
+    if (rule && value) {
+      prefixes.forEach((prefix) => {
+        style[prefix + rule] = value;
+      });
+    }
+  });
+  return style;
+};
+
+const CARD_SCALE = 0.83;
+export default defineComponent({
+  name: "ElCarouselItem",
+  props: {
+    name: { type: String, default: "" },
+    label: {
+      type: [String, Number],
+      default: "",
+    },
+  },
+  setup(props) {
+    // instance
+    const instance = getCurrentInstance();
+    instance.uid;
+    // data
+    const data = reactive({
+      hover: false,
+      translate: 0,
+      scale: 1,
+      active: false,
+      ready: false,
+      inStage: false,
+      animating: false,
+    });
+    // inject
+    const injectCarouselScope = inject("injectCarouselScope");
+    // computed
+    const parentDirection = computed(() => {
+      return injectCarouselScope.direction;
+    });
+    const itemStyle = computed(() => {
+      const translateType = parentDirection.value === "vertical" ? "translateY" : "translateX";
+      const value = `${translateType}(${data.translate}px) scale(${data.scale})`;
+      const style = {
+        transform: value,
+      };
+      return autoprefixer(style);
+    });
+    // methods
+    function processIndex(index, activeIndex, length) {
+      if (activeIndex === 0 && index === length - 1) {
+        return -1;
+      } else if (activeIndex === length - 1 && index === 0) {
+        return length;
+      } else if (index < activeIndex - 1 && activeIndex - index >= length / 2) {
+        return length + 1;
+      } else if (index > activeIndex + 1 && index - activeIndex >= length / 2) {
+        return -2;
+      }
+      return index;
+    }
+    function calcCardTranslate(index, activeIndex) {
+      const parentWidth = injectCarouselScope.offsetWidth.value;
+      if (data.inStage) {
+        return (parentWidth * ((2 - CARD_SCALE) * (index - activeIndex) + 1)) / 4;
+      } else if (index < activeIndex) {
+        return (-(1 + CARD_SCALE) * parentWidth) / 4;
+      } else {
+        return ((3 + CARD_SCALE) * parentWidth) / 4;
+      }
+    }
+    function calcTranslate(index, activeIndex, isVertical) {
+      const distance = injectCarouselScope[isVertical ? "offsetHeight" : "offsetWidth"].value;
+      return distance * (index - activeIndex);
+    }
+    const translateItem = (index, activeIndex, oldIndex) => {
+      const parentType = injectCarouselScope.type;
+      const length = injectCarouselScope.items.value.length;
+      if (parentType !== "card" && oldIndex !== undefined) {
+        data.animating = index === activeIndex || index === oldIndex;
+      }
+      if (index !== activeIndex && length > 2 && injectCarouselScope.loop) {
+        index = processIndex(index, activeIndex, length);
+      }
+      if (parentType === "card") {
+        if (parentDirection.value === "vertical") {
+          console.warn("[Element Warn][Carousel]vertical direction is not supported in card mode");
+        }
+        data.inStage = Math.round(Math.abs(index - activeIndex)) <= 1;
+        data.active = index === activeIndex;
+        data.translate = calcCardTranslate(index, activeIndex);
+        data.scale = data.active ? 1 : CARD_SCALE;
+      } else {
+        data.active = index === activeIndex;
+        const isVertical = parentDirection.value === "vertical";
+        data.translate = calcTranslate(index, activeIndex, isVertical);
+      }
+      data.ready = true;
+    };
+    function handleItemClick() {
+      if (injectCarouselScope && injectCarouselScope.type === "card") {
+        const index = injectCarouselScope.items.value.map((d) => d.uid).indexOf(instance.uid);
+        injectCarouselScope.setActiveItem(index);
+      }
+    }
+    // lifecycle
+    onMounted(() => {
+      if (injectCarouselScope.updateItems) {
+        injectCarouselScope.updateItems({
+          uid: instance.uid,
+          ...props,
+          ...toRefs(data),
+          translateItem,
+        });
+      }
+    });
+    return {
+      data,
+      itemStyle,
+      translateItem,
+      type: injectCarouselScope.type,
+      handleItemClick,
+    };
+  },
+});
+</script>
+<style lang="stylus">
+.el-carousel__item, .el-carousel__mask
+  position: absolute
+  height: 100%
+  top: 0
+  left: 0
+.el-carousel__item
+  width: 100%
+  display: inline-block
+  overflow: hidden
+  z-index: 0
+.el-carousel__item.is-active
+  z-index: 2
+.el-carousel__item.is-animating
+  -webkit-transition: -webkit-transform 0.4s ease-in-out
+  transition: -webkit-transform 0.4s ease-in-out
+  transition: transform 0.4s ease-in-out
+  transition: transform 0.4s ease-in-out, -webkit-transform 0.4s ease-in-out
+.el-carousel__item--card
+  width: 50%
+  -webkit-transition: -webkit-transform 0.4s ease-in-out
+  transition: -webkit-transform 0.4s ease-in-out
+  transition: transform 0.4s ease-in-out
+  transition: transform 0.4s ease-in-out, -webkit-transform 0.4s ease-in-out
+.el-carousel__item--card.is-in-stage
+  cursor: pointer
+  z-index: 1
+.el-carousel__item--card.is-in-stage.is-hover .el-carousel__mask, .el-carousel__item--card.is-in-stage:hover .el-carousel__mask
+  opacity: 0.12
+.el-carousel__item--card.is-active
+  z-index: 2
+.el-carousel__mask
+  width: 100%
+  background-color: #FFF
+  opacity: 0.24
+  -webkit-transition: 0.2s
+  transition: 0.2s
+.el-carousel__item:nth-child(2n)
+  background-color: #99a9bf
+.el-carousel__item:nth-child(2n+1)
+  background-color: #d3dce6
+</style>
