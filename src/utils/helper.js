@@ -29,9 +29,13 @@ export function getArtists(artists) {
 }
 
 export function formatPlayCount(count) {
-  if (count > 10000) {
+  if (count > 100000000) {
+    count = count / 100000000 + "";
+    return count.match(/\d+\.\d/)[0] + "亿";
+  } else if (count > 10000) {
     count = count / 10000 + "";
     return count.match(/\d+\.\d/)[0] + "万";
+    return;
   } else {
     return count;
   }
@@ -51,7 +55,7 @@ export function formatDate(s) {
   if (time / 3600000 < 24) {
     return addZero(hours) + ":" + addZero(minutes);
   } else {
-    return addZero(years) + "年" + addZero(months) + "月" + addZero(day);
+    return addZero(years) + "年" + addZero(months) + "月" + addZero(day) + "日";
   }
 }
 

@@ -8,7 +8,6 @@
         :id="item.id"
         :name="item.name"
         :picUrl="item.picUrl"
-        :copywriter="item.copywriter"
         :playCount="formatPlayCount(item.playCount)"
       />
     </div>

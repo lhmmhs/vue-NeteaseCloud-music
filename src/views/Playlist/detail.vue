@@ -35,6 +35,8 @@ export default {
 .img-wrap
   width: 200px
   height: 200px
+  box-shadow: 1px 1px 2px #ccc
+  border-radius: 5px
 .content
   margin-left: 20px
 .title

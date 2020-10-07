@@ -10,3 +10,6 @@ input
   box-sizing: border-box
   &:focus
     outline: none
+button
+  border: 0 none
+  padding: 0

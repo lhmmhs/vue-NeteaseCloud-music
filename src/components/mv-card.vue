@@ -4,9 +4,6 @@
     <div class="img-wrap">
       <router-link :to="`/mv/${id}`">
         <img class="mv-img" :src="`${picUrl}?param=500y260`" />
-        <div class="play-icon-wrap">
-          <i class="play-icon iconfont icon-play"></i>
-        </div>
       </router-link>
     </div>
     <div class="mv-content">

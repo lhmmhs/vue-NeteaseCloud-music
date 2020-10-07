@@ -1,14 +1,13 @@
 <template>
   <div class="playlist-card">
-    <div class="play-count">{{ playCount }}</div>
     <div class="img-wrap">
       <router-link :to="`/playlist/${id}`">
         <img class="playlist-img" :src="`${picUrl}?param=300y300`" />
         <!-- <div class="play-icon-wrap">
           <i class="play-icon iconfont icon-play"></i>
         </div> -->
-        <p class="copywriter" :title="copywriter">{{ copywriter || "" }}</p>
       </router-link>
+      <div class="play-count">{{ playCount }}</div>
     </div>
     <div class="playlist-content">
       <p :title="name" class="playlist-name">{{ name }}</p>
@@ -20,64 +19,46 @@
 import { useRouter } from "vue-router";
 
 export default {
-  props: ["id", "name", "picUrl", "copywriter", "playCount"],
+  props: ["id", "name", "picUrl", "playCount"],
 };
 </script>
 
 <style lang="stylus" scoped>
 .playlist-card
-  float: left
-  position: relative
   width: 19%
   margin-right: 1%
   cursor: pointer
   &:nth-child(-n+5)
     margin-bottom: 20px
-  &:nth-child(5n+5)
-    margin-right: 0
 .play-count
-  position: absolute
-  top: 5px
-  right: 5px
-  z-index: 1
-  font-size: 13px
-  color: #fff
-.img-wrap
-  position: relative
-  overflow: hidden
-  border-radius: 5px
-  &:hover
-    .play-icon-wrap
-      display: flex
-.play-icon-wrap
   position: absolute
   left: 0
   top: 0
   right: 0
-  bottom: 0
-  width: 50px
-  height: 50px
-  margin: auto
-  border-radius: 50%
-  display: none
-  align-items: center
-  justify-content: center
-  background: hsla(0, 0%, 100%, 0.4)
-.play-icon
-  font-size: 30px
-  color: #d33a31
-.copywriter
-  position: absolute
-  left: 0
-  bottom: 0
-  right: 0
-  font-size: 12px
-  color: #fff
-  padding: 5px
+  z-index: 1
+  padding: 5px 10px
   background: rgba(0, 0, 0, 0.4)
-  white-space: nowrap
-  text-overflow: ellipsis
+  font-size: 13px
+  color: #fff
+  text-align: right
+.img-wrap
+  position: relative
   overflow: hidden
+  border-radius: 5px
+.play-icon
+  font-size: 16px
+  color: #fff
+.play-icon-wrap
+  position: absolute
+  bottom: 10px
+  right: 10px
+  display: flex
+  justify-content: center
+  align-items: center
+  width: 30px
+  height: 30px
+  border: 2px solid #ffffff
+  border-radius: 50%
 .playlist-img
   display: block
   width: 100%

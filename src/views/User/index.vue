@@ -25,16 +25,18 @@
         </div>
       </div>
     </div>
-    <h3>歌单</h3>
     <div class="playlist">
-      <playlist-card
-        v-for="item in data.playlist"
-        :key="item.id"
-        :id="item.id"
-        :name="item.name"
-        :picUrl="item.coverImgUrl"
-        :playCount="formatPlayCount(item.playCount)"
-      />
+      <h3>歌单</h3>
+      <div class="list">
+        <playlist-card
+          v-for="item in data.playlist"
+          :key="item.id"
+          :id="item.id"
+          :name="item.name"
+          :picUrl="item.coverImgUrl"
+          :playCount="formatPlayCount(item.playCount)"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -96,6 +98,8 @@ export default {
   width: 200px
   height: 200px
   margin-right: 20px
+  box-shadow: 1px 1px 2px #ccc
+  border-radius: 5px
 .profile-content
   flex: 1
 .name-wrap
@@ -113,5 +117,17 @@ export default {
   strong
     font-size: 22px
 .playlist
-  margin-top: 20px
+  margin-top: 50px
+.list
+  display: flex
+  justify-content: space-between
+  flex-wrap: wrap
+  margin-top: 10px
+  >>> .img-wrap
+    box-shadow: 1px 1px 2px #ccc
+  >>> .playlist-card
+    margin-bottom: 20px
+  &:after
+    content: ''
+    flex: auto
 </style>
