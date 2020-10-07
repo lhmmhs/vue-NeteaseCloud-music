@@ -12,7 +12,7 @@ import { useRoute } from "vue-router";
 import { requestPlaylistDetail, requestPlaylistComments } from "@/api";
 import detail from "./detail";
 import songTable from "./song-table";
-import comments from "./comments";
+import comments from "@/components/comments";
 
 export default {
   components: { detail, songTable, comments },

@@ -43,7 +43,7 @@ export default {
 
     const getComments = async (id, page) => {
       const { comments, hotComments, total } = await commentRequest(id, 20, page);
-      console.log(comments);
+
       data.comments = comments;
       data.hotComments = hotComments;
       commentsTotal.value = total;
@@ -51,8 +51,7 @@ export default {
 
     const currentPageChange = ((id) => {
       return function (page) {
-        console.log("page", page);
-        commentRequest(id, page);
+        getComments(id, page);
       };
     })(props.id);
 

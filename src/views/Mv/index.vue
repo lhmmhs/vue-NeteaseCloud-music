@@ -1,6 +1,6 @@
 <template>
   <div class="mv">
-    <div class="content">
+    <div class="left">
       <div class="video-wrap">
         <video class="video" :src="mvUrl" controls></video>
       </div>
@@ -10,8 +10,8 @@
         <span class="publishTime">发布：{{ data.mvDetail.publishTime }}</span>
         <span class="playCount">播放：{{ data.mvDetail.playCount }}</span>
       </div>
+      <comments :id="id" :type="'mv'" />
     </div>
-    <div class="recommend"></div>
   </div>
 </template>
 
@@ -19,8 +19,10 @@
 import { requestMvDetail, requestMvUrl, requestMvComments } from "@/api";
 import { useRoute } from "vue-router";
 import { reactive, onMounted, ref } from "vue";
+import comments from "@/components/comments";
 
 export default {
+  components: { comments },
   setup() {
     const {
       params: { id },
@@ -51,7 +53,7 @@ export default {
       getMvUrl();
     });
 
-    return { data, mvUrl };
+    return { data, mvUrl, id };
   },
 };
 </script>
@@ -60,7 +62,7 @@ export default {
 .mv
   display: flex
   padding: 20px 40px
-.content
+.left
   width: 50%
 .video
   width: 100%
