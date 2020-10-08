@@ -24,13 +24,19 @@ export default {
 .mv-card
   position: relative
   width: 24%
+  overflow: hidden
+  border-radius: 5px
 .play-count
   position: absolute
-  top: 5px
-  right: 5px
+  left: 0
+  right: 0
+  top: 0
   z-index: 1
+  padding: 5px 10px
+  text-align: left
   font-size: 13px
   color: #fff
+  background: rgba(0, 0, 0, 0.4)
 .img-wrap
   position: relative
   overflow: hidden

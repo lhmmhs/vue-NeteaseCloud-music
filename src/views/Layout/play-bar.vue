@@ -10,8 +10,11 @@
     <div class="song-progress">
       <div class="song">
         <div class="img-wrap">
-          <div class="img-loading" v-if="!currentSong.song"></div>
+          <div v-if="!currentSong.song" class="img-loading"></div>
           <img v-else class="song-img" :src="`${currentSong.picUrl}?param=40y40`" />
+          <div class="mask" @click="player">
+            <i class="iconfont icon-component" :class="[show ? 'icon-shrink' : 'icon-open']"></i>
+          </div>
         </div>
         <span class="duration">
           {{ currentSong.song ? formatTime(currentSong.song.duration) : "00:00" }}
@@ -23,9 +26,15 @@
         ref="progressBarWrap"
         class="progress-bar-wrap"
         @mousemove="mousemoveHandler"
-        @mousemover="mouseoutHandler"
+        @mouseleave="mouseleaveHandler"
       >
-        <div ref="progressBar" class="cur" :style="{ width: progressBarCurWidth + 'px' }"></div>
+        <div class="progress" @click="progressChange"></div>
+        <div
+          ref="progressBar"
+          class="cur"
+          @click="progressChange"
+          :style="{ width: progressBarCurWidth + 'px' }"
+        ></div>
         <button
           ref="btn"
           class="btn"
@@ -58,31 +67,28 @@ export default {
   setup() {
     const store = useStore();
 
+    // dom
     const btn = ref(null);
     const audio = ref(null);
     const progressBarWrap = ref(null);
     const progressBar = ref(null);
 
-    let progressBarWidth = 0;
+    // ref
     const progressBarCurWidth = ref(0);
 
+    let progressBarWidth = 0;
     let btnClientX = 0;
     let btnOffsetLeft = 0;
-    let move = false;
-
-    const isShow = ref(false);
 
     const currentSong = computed(() => store.state.music.currentSong);
     const currentTime = computed(() => store.state.music.currentTime);
     const playing = computed(() => store.state.music.playing);
+    const move = computed(() => store.state.music.move);
+    const show = computed(() => store.state.music.show);
 
     // watch
     watch(currentSong, async (currentSong, prev) => {
       await audio.value.play();
-    });
-
-    watch(currentTime, async (currentTime, prev) => {
-      calcProgressBarCurWidth(currentTime);
     });
 
     // evnet
@@ -95,7 +101,9 @@ export default {
     }
 
     function timeUpdateHandler(e) {
-      store.commit("music/setCurrentTime", e.target.currentTime);
+      const currentTime = e.target.currentTime;
+      store.commit("music/setCurrentTime", currentTime);
+      calcProgressBarCurWidth(currentTime);
     }
 
     function pauseHandler(e) {
@@ -107,37 +115,77 @@ export default {
     }
 
     function mousedownHandler(e) {
-      move = true;
+      if (!currentSong.value.url) return;
+      store.commit("music/setMove", true);
       btnClientX = e.clientX;
       btnOffsetLeft = e.target.offsetLeft;
     }
 
     function mouseupHandler(e) {
-      move = false;
+      // 1.暂停
+      // 2.结束
+      // 先播放音乐
+      if (!playing.value) {
+        audio.value.play();
+      }
+      audio.value.currentTime = currentTime.value;
+      store.commit("music/setCurrentTimeByMove", currentTime.value);
+      store.commit("music/setMove", false);
     }
 
-    function mouseoutHandler(e) {
-      move = false;
+    function mouseleaveHandler(e) {
+      store.commit("music/setMove", false);
     }
 
     function mousemoveHandler(e) {
-      if (!move) return;
+      if (!move.value) return;
       let clientX = e.clientX;
       let clacVlue = clientX - (btnClientX - btnOffsetLeft);
       if (clacVlue < 0) clacVlue = 0;
       else if (clacVlue > progressBarWidth) clacVlue = progressBarWidth;
 
       progressBarCurWidth.value = clacVlue;
+      calcCurrentTime(clacVlue);
+    }
+
+    function progressChange(e) {
+      if (!currentSong.value.url) return;
+
+      let clientX = e.clientX;
+      let left = e.target.getBoundingClientRect().left;
+      let clacVlue = clientX - left;
+      progressBarCurWidth.value = clacVlue;
+      calcCurrentTime(clacVlue);
+      if (!playing.value) {
+        audio.value.play();
+      }
+      audio.value.currentTime = currentTime.value;
     }
 
     // methods
-    function percent(currentTime) {
+    // 通过时间计算百分比
+    function percentByTime(currentTime) {
       const { duration } = currentSong.value.song;
       return currentTime / Math.ceil(duration / 1000);
     }
 
+    // 通过时间百分比计算进度条宽度
     function calcProgressBarCurWidth(currentTime) {
-      progressBarCurWidth.value = progressBarWidth * percent(currentTime);
+      if (move.value) return;
+      progressBarCurWidth.value = progressBarWidth * percentByTime(currentTime);
+    }
+
+    // 通过宽度计算百分比
+    function percentByWidth(width) {
+      return width / progressBarWidth;
+    }
+
+    // 通过宽度百分比计算歌曲当前播放的时间
+    function calcCurrentTime(width) {
+      store.commit(
+        "music/setCurrentTimeByMove",
+        percentByWidth(width) * (currentSong.value.song.duration / 1000)
+      );
     }
 
     function play() {
@@ -158,6 +206,12 @@ export default {
       audio.value.pause();
     }
 
+    function player() {
+      if (!currentSong.value.url) return;
+
+      store.commit("music/setShow", !show.value);
+    }
+
     // life
     onMounted(() => {
       progressBarWidth = progressBarWrap.value.offsetWidth;
@@ -175,6 +229,7 @@ export default {
       currentSong,
       currentTime,
       playing,
+      show,
 
       canplayHandler,
       endHandler,
@@ -184,11 +239,13 @@ export default {
       mousedownHandler,
       mouseupHandler,
       mousemoveHandler,
-      mouseoutHandler,
+      mouseleaveHandler,
+      progressChange,
 
       play,
       next,
       prev,
+      player,
       formatTime,
     };
   },
@@ -203,6 +260,7 @@ export default {
   left: 0
   right: 0
   bottom: 0
+  z-index: 4
   height: 60px
   padding: 0 20px
   background: #f9f9f9
@@ -231,14 +289,25 @@ export default {
 .progress-bar-wrap
   position: relative
   width: 40%
+  height: 100%
+.progress
+  position: absolute
+  top: 0
+  bottom: 0
+  left: 0
+  right: 0
+  margin: auto
   height: 2px
-  margin-left: 30px
   background: #ccc
+  cursor: pointer
 .cur
   position: absolute
+  top: 0
+  bottom: 0
   left: 0
   top: 0
   height: 2px
+  margin: auto
   background: #d33a31
   cursor: pointer
 .btn
@@ -257,19 +326,35 @@ export default {
   height: 100%
   display: flex
   align-items: center
-.song-img
-  display: block
+  margin-right: 30px
 .duration, .currentTime
   font-size: 14px
 .slash
   margin: 0 4px
   font-size: 12px
 .img-loading, .img-wrap
+  position: relative
   width: 40px
   height: 40px
   margin-right: 10px
   background: #ebebeb
   box-shadow: 1px 1px 2px 2px #eee
+.song-img
+  display: block
+.mask
+  display: flex
+  align-items: center
+  justify-content: center
+  position: absolute
+  left: 0
+  top: 0
+  bottom: 0
+  right: 0
+  background: rgba(0, 0, 0, 0.4)
+  cursor: pointer
+.icon-component
+  color: #ffffff
+  font-size: 18px
 .song-progress
   flex: 1
   display: flex
