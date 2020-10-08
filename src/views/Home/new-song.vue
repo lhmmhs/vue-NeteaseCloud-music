@@ -7,7 +7,7 @@
         :order="index"
         v-for="(song, index) in songs"
         :key="song.id"
-        @click.native="setCurrentSong(song.id)"
+        @click.native="setCurrentSong(song)"
       />
     </div>
   </div>
@@ -18,11 +18,13 @@ import { onMounted, reactive, ref } from "vue";
 import { requestNewSong } from "@/api";
 import songCard from "@/components/song-card";
 import { nomalizeSong } from "@/utils";
-import { mapMutations } from "vuex";
+import { useStore } from "vuex";
 
 export default {
   components: { songCard },
   setup() {
+    const store = useStore();
+
     const songs = ref([]);
 
     // methods
@@ -31,21 +33,17 @@ export default {
       songs.value = result;
     };
 
-    const setCurrentSong = (id) => {
-      console.log(id);
+    const setCurrentSong = (song) => {
+      store.dispatch("music/playSong", song);
     };
 
-    const mutations = { ...mapMutations("music", ["setCurrentSong"]) };
-
-    console.log(mutations);
     // lifecycle
     onMounted(getNewSongs);
 
     return {
       songs,
       nomalizeSong,
-      // setCurrentSong,
-      ...mapMutations("music", ["setCurrentSong"]),
+      setCurrentSong,
     };
   },
 };

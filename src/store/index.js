@@ -1,9 +1,9 @@
 import Vuex from "vuex";
-import musicModule from "./modules/music";
+import music from "./modules/music";
 
 const store = new Vuex.Store({
   modules: {
-    music: musicModule,
+    music,
   },
 });
 

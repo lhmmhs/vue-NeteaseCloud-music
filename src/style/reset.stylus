@@ -13,3 +13,5 @@ input
 button
   border: 0 none
   padding: 0
+button:focus
+  outline: none
