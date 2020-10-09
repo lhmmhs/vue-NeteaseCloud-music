@@ -11,7 +11,7 @@
             <span>歌手：</span>
             <span class="artist" v-for="artist in currentSong.song.artists">{{ artist.name }}</span>
           </div>
-          <div class="lyric" ref="scroll">
+          <div class="lyric">
             <ul class="lrcs">
               <li class="lrc" v-for="item in data.lyric" :ref="setItemRef">
                 <p class="lrc-txt" v-for="content in item.contents">{{ content }}</p>
@@ -40,7 +40,6 @@ export default {
     const route = useRoute();
     const store = useStore();
 
-    const scroll = ref(null);
     let itemRefs = [];
 
     const data = reactive({
@@ -53,6 +52,15 @@ export default {
     const currentTime = computed(() => store.state.music.currentTime);
     const move = computed(() => store.state.music.move);
 
+    const activeLyricIndex = ref(-1);
+
+    function lyricActiveIndex(time) {
+      let currentTime = time * 1000;
+      let res = [];
+      res = data.lyric.filter(({ time, content }) => currentTime > time);
+      activeLyricIndex.value = res.length === 0 ? -1 : res.length - 1;
+    }
+
     watch(show, () => {
       getLyric();
     });
@@ -64,32 +72,27 @@ export default {
       }
     );
 
+    watch(currentSong, () => {
+      // 切换新歌 清空已存在的dom引用
+      itemRefs = [];
+    });
+
     watch(currentTime, (time, prev) => {
       if (!show.value) return;
       if (move.value) return;
 
-      getActiveIndex(time);
+      lyricActiveIndex(time);
     });
 
-    function getActiveIndex(time) {
-      let currentTime = time * 1000;
-      let res = [];
-      res = data.lyric.filter(({ time, content }) => currentTime > time);
-      if (res.length === 0) return;
-      return res.length - 1;
-    }
+    watch(activeLyricIndex, (newIndex, oldIndex) => {
+      if (newIndex !== oldIndex) {
+        console.log(itemRefs[newIndex]);
+      }
+    });
 
     const setItemRef = (el) => {
       itemRefs.push(el);
     };
-
-    onBeforeUpdate(() => {
-      itemRefs = [];
-    });
-
-    onUpdated(() => {
-      console.log(itemRefs);
-    });
 
     const getLyric = async () => {
       const lyric = await requestLyric(currentSong.value.id);
@@ -98,15 +101,16 @@ export default {
       data.lyric = mergeLrcTlyric(lrc, tlyric);
     };
 
+    onMounted(() => {
+      console.log("player mounted");
+    });
+
     return {
       show,
       currentSong,
       playing,
 
       data,
-
-      scroll,
-
       setItemRef,
     };
   },
