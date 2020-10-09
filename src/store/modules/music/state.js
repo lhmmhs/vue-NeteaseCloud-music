@@ -9,4 +9,5 @@ export default {
   move: false,
   // player show
   show: false,
+  lyric: [],
 };

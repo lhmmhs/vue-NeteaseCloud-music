@@ -35,7 +35,6 @@ export function formatPlayCount(count) {
   } else if (count > 10000) {
     count = count / 10000 + "";
     return count.match(/\d+\.\d/)[0] + "万";
-    return;
   } else {
     return count;
   }

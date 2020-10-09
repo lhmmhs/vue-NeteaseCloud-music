@@ -77,7 +77,9 @@ export default {
 
     onMounted(() => {
       getUserDetail();
-      getUserRecord();
+      // 听歌次数
+      // 有权限限制
+      // getUserRecord();
       getUserPlaylist();
     });
 

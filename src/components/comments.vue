@@ -9,16 +9,20 @@
       <comment :comments="data.comments" />
     </div>
   </div>
-  <pager @currentPage="currentPageChange" :pageCount="Math.ceil(commentsTotal / 20)" :pagerCount="7" />
+  <pager
+    @currentPage="currentPageChange"
+    :pageCount="Math.ceil(commentsTotal / 20)"
+    :pagerCount="7"
+  />
 </template>
 
 <script>
 import { inject, onMounted, reactive, ref } from "vue";
 import pager from "@/components/pager";
 import comment from "@/components/comment";
-import { requestPlaylistComments, requestMvComments } from "@/api";
+import { requestPlaylistComments, requestMvComments, requestMusicComments } from "@/api";
 
-const SONG_TYPE = "song";
+const MUSIC_TYPE = "music";
 const PLAYLIST_TYPE = "playlist";
 const MV_TYPE = "mv";
 
@@ -28,7 +32,7 @@ export default {
   setup(props) {
     const commentRequestMap = {
       [PLAYLIST_TYPE]: requestPlaylistComments,
-      // [SONG_TYPE]: requestSongComments,
+      [MUSIC_TYPE]: requestMusicComments,
       [MV_TYPE]: requestMvComments,
     };
     const commentRequest = commentRequestMap[props.type];

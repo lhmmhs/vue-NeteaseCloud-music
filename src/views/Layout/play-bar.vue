@@ -10,7 +10,7 @@
     <div class="song-progress">
       <div class="song">
         <div class="img-wrap">
-          <div v-if="!currentSong.song" class="img-loading"></div>
+          <div v-if="!currentSong.picUrl" class="img-loading"></div>
           <img v-else class="song-img" :src="`${currentSong.picUrl}?param=40y40`" />
           <div class="mask" @click="player">
             <i class="iconfont icon-component" :class="[show ? 'icon-shrink' : 'icon-open']"></i>
@@ -27,6 +27,7 @@
         class="progress-bar-wrap"
         @mousemove="mousemoveHandler"
         @mouseleave="mouseleaveHandler"
+        @mouseup="mouseupHandler"
       >
         <div class="progress" @click="progressChange"></div>
         <div
@@ -39,7 +40,6 @@
           ref="btn"
           class="btn"
           @mousedown="mousedownHandler"
-          @mouseup="mouseupHandler"
           :style="{ left: progressBarCurWidth + 'px' }"
         ></button>
       </div>
@@ -122,6 +122,11 @@ export default {
     }
 
     function mouseupHandler(e) {
+      if (!currentSong.value.url) return;
+      // 1.有播放中的歌曲
+      // 2.未移动
+      if (currentSong.value.url && !move.value) return;
+
       // 1.暂停
       // 2.结束
       // 先播放音乐
@@ -140,12 +145,12 @@ export default {
     function mousemoveHandler(e) {
       if (!move.value) return;
       let clientX = e.clientX;
-      let clacVlue = clientX - (btnClientX - btnOffsetLeft);
-      if (clacVlue < 0) clacVlue = 0;
-      else if (clacVlue > progressBarWidth) clacVlue = progressBarWidth;
+      let clacValue = clientX - (btnClientX - btnOffsetLeft);
+      if (clacValue < 0) clacValue = 0;
+      else if (clacValue > progressBarWidth) clacValue = progressBarWidth;
 
-      progressBarCurWidth.value = clacVlue;
-      calcCurrentTime(clacVlue);
+      progressBarCurWidth.value = clacValue;
+      calcCurrentTime(clacValue);
     }
 
     function progressChange(e) {
@@ -153,9 +158,9 @@ export default {
 
       let clientX = e.clientX;
       let left = e.target.getBoundingClientRect().left;
-      let clacVlue = clientX - left;
-      progressBarCurWidth.value = clacVlue;
-      calcCurrentTime(clacVlue);
+      let clacValue = clientX - left;
+      progressBarCurWidth.value = clacValue;
+      calcCurrentTime(clacValue);
       if (!playing.value) {
         audio.value.play();
       }
@@ -264,6 +269,7 @@ export default {
   height: 60px
   padding: 0 20px
   background: #f9f9f9
+  box-shadow: 2px 2px 4px #000
 .controls
   display: inline-flex
   align-items: center
