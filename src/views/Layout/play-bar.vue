@@ -13,7 +13,10 @@
           <div v-if="!currentSong.picUrl" class="img-loading"></div>
           <img v-else class="song-img" :src="`${currentSong.picUrl}?param=40y40`" />
           <div class="mask" @click="player">
-            <i class="iconfont icon-component" :class="[show ? 'icon-shrink' : 'icon-open']"></i>
+            <i
+              class="iconfont icon-component"
+              :class="[playerShow ? 'icon-shrink' : 'icon-open']"
+            ></i>
           </div>
         </div>
         <span class="duration">
@@ -84,7 +87,7 @@ export default {
     const currentTime = computed(() => store.state.music.currentTime);
     const playing = computed(() => store.state.music.playing);
     const move = computed(() => store.state.music.move);
-    const show = computed(() => store.state.music.show);
+    const playerShow = computed(() => store.state.music.playerShow);
 
     // watch
     watch(currentSong, async (currentSong, prev) => {
@@ -214,7 +217,7 @@ export default {
     function player() {
       if (!currentSong.value.url) return;
 
-      store.commit("music/setShow", !show.value);
+      store.commit("music/setPlayerShow", !playerShow.value);
     }
 
     // life
@@ -234,7 +237,7 @@ export default {
       currentSong,
       currentTime,
       playing,
-      show,
+      playerShow,
 
       canplayHandler,
       endHandler,

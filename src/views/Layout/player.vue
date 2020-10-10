@@ -1,6 +1,6 @@
 <template>
   <transition name="fade">
-    <div v-if="show" class="player">
+    <div v-if="playerShow" class="player">
       <div class="song">
         <div class="img-wrap" :class="{ paused: !playing }">
           <img class="song-img" :src="`${currentSong.picUrl}?param=250y250`" />
@@ -9,15 +9,27 @@
           <h3 class="song-name">{{ currentSong.name }}</h3>
           <div class="artists">
             <span>歌手：</span>
-            <span class="artist" v-for="artist in currentSong.song.artists">{{ artist.name }}</span>
+            <span v-for="artist in currentSong.song.artists">
+              <router-link :to="`/artist/${artist.id}`" class="artist">
+                {{ artist.name }}
+              </router-link>
+              <span class="slash">/</span>
+            </span>
           </div>
-          <div class="lyric">
+          <!-- <div class="lyric"> -->
+          <scroller class="lyric" @init="initHandler" :data="data.lyric">
             <ul class="lrcs">
-              <li class="lrc" v-for="item in data.lyric" :ref="setItemRef">
+              <li
+                class="lrc"
+                v-for="(item, index) in data.lyric"
+                :ref="setItemRef"
+                :class="getLyricActive(index)"
+              >
                 <p class="lrc-txt" v-for="content in item.contents">{{ content }}</p>
               </li>
             </ul>
-          </div>
+          </scroller>
+          <!-- </div> -->
         </div>
       </div>
       <comments :id="currentSong.id" :type="'music'" />
@@ -26,20 +38,21 @@
 </template>
 
 <script>
-import { ref, computed, watch, onMounted, reactive, onBeforeUpdate, onUpdated } from "vue";
+import { ref, computed, watch, onMounted, reactive } from "vue";
 import { useStore } from "vuex";
 import { formatTime } from "@/utils";
-import { requestLyric, requestMusicComments } from "@/api";
 import comments from "@/components/comments";
+import scroller from "@/components/scroller";
 import { lyricParser, mergeLrcTlyric } from "@/utils";
 import { useRoute } from "vue-router";
 
 export default {
-  components: { comments },
+  components: { comments, scroller },
   setup() {
     const route = useRoute();
     const store = useStore();
 
+    let scroller = null;
     let itemRefs = [];
 
     const data = reactive({
@@ -47,71 +60,74 @@ export default {
     });
 
     const currentSong = computed(() => store.state.music.currentSong);
-    const show = computed(() => store.state.music.show);
+    const playerShow = computed(() => store.state.music.playerShow);
     const playing = computed(() => store.state.music.playing);
     const currentTime = computed(() => store.state.music.currentTime);
     const move = computed(() => store.state.music.move);
+    const lyric = computed(() => store.state.music.lyric);
 
-    const activeLyricIndex = ref(-1);
-
-    function lyricActiveIndex(time) {
-      let currentTime = time * 1000;
+    const activeLyricIndex = computed(() => {
       let res = [];
-      res = data.lyric.filter(({ time, content }) => currentTime > time);
-      activeLyricIndex.value = res.length === 0 ? -1 : res.length - 1;
-    }
+      res = data.lyric.filter(({ time, content }) => currentTime.value * 1000 > time);
+      return res.length === 0 ? -1 : res.length - 1;
+    });
 
-    watch(show, () => {
-      getLyric();
+    watch(playerShow, () => {
+      // 每次打开歌词界面，清空旧的dom引用
+      // 因为每次打开都需要重新渲染
+      itemRefs = [];
+
+      const { tlyric, lrc, lyricUser, transUser } = lyricParser(lyric.value);
+      data.lyric = mergeLrcTlyric(lrc, tlyric);
     });
 
     watch(
       () => route.path,
       () => {
-        store.commit("music/setShow", false);
+        store.commit("music/setPlayerShow", false);
       }
     );
 
-    watch(currentSong, () => {
-      // 切换新歌 清空已存在的dom引用
-      itemRefs = [];
-    });
-
-    watch(currentTime, (time, prev) => {
-      if (!show.value) return;
-      if (move.value) return;
-
-      lyricActiveIndex(time);
-    });
-
     watch(activeLyricIndex, (newIndex, oldIndex) => {
+      if (!playerShow.value) return;
       if (newIndex !== oldIndex) {
-        console.log(itemRefs[newIndex]);
+        scrollToActiveLyric();
       }
     });
 
-    const setItemRef = (el) => {
-      itemRefs.push(el);
-    };
+    function scrollToActiveLyric() {
+      if (activeLyricIndex.value !== -1) {
+        if (scroller && itemRefs[activeLyricIndex.value]) {
+          scroller.scrollToElement(itemRefs[activeLyricIndex.value], 200, 0, true);
+        }
+      }
+    }
 
-    const getLyric = async () => {
-      const lyric = await requestLyric(currentSong.value.id);
-      const { tlyric, lrc, lyricUser, transUser } = lyricParser(lyric);
+    function getLyricActive(index) {
+      return activeLyricIndex.value === index ? "active" : "";
+    }
 
-      data.lyric = mergeLrcTlyric(lrc, tlyric);
-    };
+    function setItemRef(el) {
+      //
+      if (itemRefs.length < data.lyric.length) {
+        itemRefs.push(el);
+      }
+    }
 
-    onMounted(() => {
-      console.log("player mounted");
-    });
+    function initHandler(bscroll) {
+      scroller = bscroll;
+    }
 
     return {
-      show,
+      playerShow,
       currentSong,
       playing,
 
       data,
+
+      getLyricActive,
       setItemRef,
+      initHandler,
     };
   },
 };
@@ -171,15 +187,20 @@ export default {
 .artist
   font-size: 13px
   color: #4996d1
-  margin-right: 6px
+  margin: 0 6px
+.slash
+  font-size: 12px
 .lyric
+  position: relative
   height: 350px
-  overflow-y: auto
+  overflow: hidden
 .lrcs
   padding: 16px 0
 .lrc
   margin-bottom: 16px
   font-size: 13px
+  &.active
+    font-weight: 700
 .lrc-txt
   margin-bottom: 8px
 .fade-enter-active, .fade-leave-active

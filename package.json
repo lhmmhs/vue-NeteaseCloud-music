@@ -10,6 +10,9 @@
   "author": "lhmmhs",
   "license": "ISC",
   "dependencies": {
+    "@better-scroll/core": "^2.0.4",
+    "@better-scroll/mouse-wheel": "^2.0.4",
+    "@better-scroll/scroll-bar": "^2.0.4",
     "axios": "^0.20.0",
     "vue": "^3.0.0-rc.12",
     "vue-router": "^4.0.0-beta.10",

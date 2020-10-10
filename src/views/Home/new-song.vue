@@ -7,7 +7,7 @@
         :order="index"
         v-for="(song, index) in songs"
         :key="song.id"
-        @click.native="setCurrentSong(song)"
+        @click.native="playSong(song)"
       />
     </div>
   </div>
@@ -33,7 +33,7 @@ export default {
       songs.value = result;
     };
 
-    const setCurrentSong = (song) => {
+    const playSong = (song) => {
       store.dispatch("music/playSong", song);
     };
 
@@ -43,7 +43,7 @@ export default {
     return {
       songs,
       nomalizeSong,
-      setCurrentSong,
+      playSong,
     };
   },
 };

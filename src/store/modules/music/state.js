@@ -8,6 +8,9 @@ export default {
   // 移动开关
   move: false,
   // player show
-  show: false,
+  playerShow: false,
+  // 歌词
   lyric: [],
+  // 播放列表
+  playlist: [],
 };

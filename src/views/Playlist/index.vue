@@ -9,7 +9,7 @@
 <script>
 import { onMounted, computed, ref, provide, reactive } from "vue";
 import { useRoute } from "vue-router";
-import { requestPlaylistDetail, requestPlaylistComments } from "@/api";
+import { requestPlaylistDetail } from "@/api";
 import detail from "./detail";
 import songTable from "./song-table";
 import comments from "@/components/comments";

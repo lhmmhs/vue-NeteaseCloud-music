@@ -17,7 +17,13 @@ export default {
   setMove(state, move) {
     state.move = move;
   },
-  setShow(state, show) {
-    state.show = show;
+  setPlayerShow(state, playerShow) {
+    state.playerShow = playerShow;
+  },
+  setLyric(state, lyric) {
+    state.lyric = lyric;
+  },
+  setPlaylist(state, song) {
+    state.playlist.push(song);
   },
 };

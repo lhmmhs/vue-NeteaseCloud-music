@@ -1,6 +1,6 @@
 <template>
   <div class="song-card">
-    <div class="order">{{(order+1) > 9 ? order+1 : "0" + (order+1) }}</div>
+    <div class="order">{{ order + 1 > 9 ? order + 1 : "0" + (order + 1) }}</div>
     <div class="img-wrap">
       <img :src="`${picUrl}?param=60y60`" />
       <div class="play-icon-wrap">
@@ -9,7 +9,7 @@
     </div>
     <div class="song-content">
       <p :title="name" class="song-name">{{ name }}</p>
-      <p class="artists">{{ artists }}</p>
+      <p :title="artists" class="artists">{{ artists }}</p>
     </div>
   </div>
 </template>
@@ -55,7 +55,7 @@ export default {
   font-size: 20px
   color: #d33a31
 .song-content
-  flex: 1
+  width: 70%
 .song-name, .artists
   width: 90%
   padding: 2px 0

@@ -12,12 +12,12 @@
         </tr>
       </thead>
       <tbody class="tbody">
-        <tr class="row" v-for="(song, index) in songs" :key="song.id">
-          <td class="td td-index">{{getIndex(index+1)}}</td>
-          <td class="td td-name" :title="song.name">{{song.name}}</td>
-          <td class="td td-dt" :title="formatTime(song.dt)">{{formatTime(song.dt)}}</td>
-          <td class="td td-ar" :title="getArtists(song.ar)">{{getArtists(song.ar)}}</td>
-          <td class="td td-al" :title="song.al.name">{{song.al.name}}</td>
+        <tr class="row" v-for="(song, index) in songs" :key="song.id" @click="playSong(song)">
+          <td class="td td-index">{{ getIndex(index + 1) }}</td>
+          <td class="td td-name" :title="song.name">{{ song.name }}</td>
+          <td class="td td-dt" :title="formatTime(song.dt)">{{ formatTime(song.dt) }}</td>
+          <td class="td td-ar" :title="getArtists(song.ar)">{{ getArtists(song.ar) }}</td>
+          <td class="td td-al" :title="song.al.name">{{ song.al.name }}</td>
         </tr>
       </tbody>
     </table>
@@ -25,19 +25,28 @@
 </template>
 
 <script>
+import { computed } from "vue";
 import { formatTime, getArtists } from "@/utils";
+import { useStore } from "vuex";
 
 export default {
   props: ["songs"],
-  setup() {
+  setup(props) {
+    const store = useStore();
+
+    const playlist = computed(() => store.state.music.playlist);
+
     const getIndex = (index) => {
       return index < 10 ? "0" + index : index;
     };
+
+    function playSong(song) {}
 
     return {
       getIndex,
       getArtists,
       formatTime,
+      playSong,
     };
   },
 };
