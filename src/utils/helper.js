@@ -67,3 +67,7 @@ export function formatTime(duration) {
   let seconds = Math.floor(duration / 1000) % 60;
   return addZero(minutes) + ":" + addZero(seconds);
 }
+
+export function songUrl(id) {
+  return `https://music.163.com/song/media/outer/url?id=${id}.mp3`;
+}

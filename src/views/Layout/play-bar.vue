@@ -13,14 +13,11 @@
           <div v-if="!currentSong.picUrl" class="img-loading"></div>
           <img v-else class="song-img" :src="`${currentSong.picUrl}?param=40y40`" />
           <div class="mask" @click="player">
-            <i
-              class="iconfont icon-component"
-              :class="[playerShow ? 'icon-shrink' : 'icon-open']"
-            ></i>
+            <i class="iconfont icon-component" :class="[playerShow ? 'icon-shrink' : 'icon-open']"></i>
           </div>
         </div>
         <span class="duration">
-          {{ currentSong.song ? formatTime(currentSong.song.duration) : "00:00" }}
+          {{ currentSong.duration ? formatTime(currentSong.duration) : "00:00" }}
         </span>
         <span class="slash">/</span>
         <span class="currentTime">{{ formatTime(currentTime * 1000) }}</span>
@@ -33,12 +30,7 @@
         @mouseup="mouseupHandler"
       >
         <div class="progress" @click="progressChange"></div>
-        <div
-          ref="progressBar"
-          class="cur"
-          @click="progressChange"
-          :style="{ width: progressBarCurWidth + 'px' }"
-        ></div>
+        <div ref="progressBar" class="cur" @click="progressChange" :style="{ width: progressBarCurWidth + 'px' }"></div>
         <button
           ref="btn"
           class="btn"
@@ -47,7 +39,21 @@
         ></button>
       </div>
     </div>
-    <div class="right"></div>
+    <div class="right">
+      <i class="iconfont icon-sequence"></i>
+      <i class="iconfont icon-playlist"></i>
+    </div>
+    <!-- <div class="playlist">
+      <div class="playlist-title">播放列表</div>
+      <div class="playlist-bar">
+        <div class="total">总共{{ playlist.length }}首</div>
+        <div class="remove">
+          <i class="iconfont icon-remove"></i>
+          <span>清空</span>
+        </div>
+      </div>
+      <div class="playlist-songs"></div>
+    </div> -->
     <audio
       ref="audio"
       class="audio"
@@ -65,8 +71,11 @@
 import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { useStore } from "vuex";
 import { formatTime } from "@/utils";
+import songTable from "@/components/song-table/table";
+import songTableColumn from "@/components/song-table/table-column";
 
 export default {
+  components: { songTable, songTableColumn },
   setup() {
     const store = useStore();
 
@@ -88,6 +97,7 @@ export default {
     const playing = computed(() => store.state.music.playing);
     const move = computed(() => store.state.music.move);
     const playerShow = computed(() => store.state.music.playerShow);
+    const playlist = computed(() => store.state.music.playlist);
 
     // watch
     watch(currentSong, async (currentSong, prev) => {
@@ -173,7 +183,7 @@ export default {
     // methods
     // 通过时间计算百分比
     function percentByTime(currentTime) {
-      const { duration } = currentSong.value.song;
+      const { duration } = currentSong.value;
       return currentTime / Math.ceil(duration / 1000);
     }
 
@@ -190,10 +200,7 @@ export default {
 
     // 通过宽度百分比计算歌曲当前播放的时间
     function calcCurrentTime(width) {
-      store.commit(
-        "music/setCurrentTimeByMove",
-        percentByWidth(width) * (currentSong.value.song.duration / 1000)
-      );
+      store.commit("music/setCurrentTimeByMove", percentByWidth(width) * (currentSong.value.duration / 1000));
     }
 
     function play() {
@@ -238,6 +245,7 @@ export default {
       currentTime,
       playing,
       playerShow,
+      playlist,
 
       canplayHandler,
       endHandler,
@@ -370,4 +378,34 @@ export default {
   justify-content: center
   align-items: center
   height: 100%
+.icon-playlist, .icon-sequence
+  margin-right: 25px
+  font-size: 22px
+  cursor: pointer
+.playlist
+  position: fixed
+  right: 0
+  bottom: 60px
+  width: 380px
+  font-size: 13px
+  background: #fff
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.2)
+.playlist-title
+  text-align: center
+  height: 45px
+  line-height: 45px
+.playlist-bar
+  display: flex
+  height: 40px
+  padding: 0 20px
+  justify-content: space-between
+  align-items: center
+.playlist-songs
+  height: 280px
+  overflow-y: auto
+.remove
+  line-height: 40px
+.icon-remove
+  vertical-align: -2px
+  font-size: 17px
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="song-list">
     <h3>歌曲表单</h3>
-    <table cellspacing="0" cellpadding="0" border="0">
+    <!-- <table>
       <thead class="thead">
         <tr class="row">
           <th class="th th-index"></th>
@@ -20,33 +20,67 @@
           <td class="td td-al" :title="song.al.name">{{ song.al.name }}</td>
         </tr>
       </tbody>
-    </table>
+    </table> -->
+    <song-table :tableData="nomalizeSongs">
+      <song-table-column type="index" />
+      <song-table-column prop="name" label="音乐标题" />
+      <song-table-column prop="duration" label="时长" :formatter="formatTime" />
+      <song-table-column prop="artists" label="歌手" :formatter="getArtists" />
+      <song-table-column prop="album.name" label="专辑" />
+    </song-table>
   </div>
 </template>
 
 <script>
-import { computed } from "vue";
-import { formatTime, getArtists } from "@/utils";
+import { watch, ref } from "vue";
+import { formatTime, getArtists, songUrl } from "@/utils";
 import { useStore } from "vuex";
+import songTable from "@/components/song-table/table";
+import songTableColumn from "@/components/song-table/table-column";
 
 export default {
-  props: ["songs"],
+  props: {
+    songs: {
+      type: Array,
+      default: () => [],
+    },
+  },
+  components: { songTable, songTableColumn },
   setup(props) {
     const store = useStore();
 
-    const playlist = computed(() => store.state.music.playlist);
+    let nomalizeSongs = ref([]);
 
-    const getIndex = (index) => {
-      return index < 10 ? "0" + index : index;
+    const nomalize = (rawSong) => {
+      const { al, ar, dt, id, name, mv } = rawSong;
+      return {
+        id,
+        name,
+        picUrl: al.picUrl,
+        album: al,
+        duration: dt,
+        artists: ar,
+        url: songUrl(id),
+        mvid: mv,
+      };
     };
 
-    function playSong(song) {}
+    function playSong(song) {
+      store.dispatch("music/playSong", song);
+    }
+
+    watch(
+      () => props.songs,
+      (songs) => {
+        nomalizeSongs.value = songs.map((song) => nomalize(song));
+      }
+    );
 
     return {
-      getIndex,
       getArtists,
       formatTime,
       playSong,
+      nomalizeSongs,
     };
   },
 };

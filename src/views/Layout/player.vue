@@ -6,30 +6,26 @@
           <img class="song-img" :src="`${currentSong.picUrl}?param=250y250`" />
         </div>
         <div class="song-content">
-          <h3 class="song-name">{{ currentSong.name }}</h3>
+          <h3 class="name-wrap">
+            <span class="song-name">{{ currentSong.name }}</span>
+            <router-link v-if="currentSong.mvid" :to="`/mv/${currentSong.mvid}`" class="mv-tag">MV</router-link>
+          </h3>
           <div class="artists">
             <span>歌手：</span>
-            <span v-for="artist in currentSong.song.artists">
+            <span v-for="artist in currentSong.artists">
               <router-link :to="`/artist/${artist.id}`" class="artist">
                 {{ artist.name }}
               </router-link>
               <span class="slash">/</span>
             </span>
           </div>
-          <!-- <div class="lyric"> -->
           <scroller class="lyric" @init="initHandler" :data="data.lyric">
             <ul class="lrcs">
-              <li
-                class="lrc"
-                v-for="(item, index) in data.lyric"
-                :ref="setItemRef"
-                :class="getLyricActive(index)"
-              >
+              <li class="lrc" v-for="(item, index) in data.lyric" :ref="setItemRef" :class="getLyricActive(index)">
                 <p class="lrc-txt" v-for="content in item.contents">{{ content }}</p>
               </li>
             </ul>
           </scroller>
-          <!-- </div> -->
         </div>
       </div>
       <comments :id="currentSong.id" :type="'music'" />
@@ -38,7 +34,7 @@
 </template>
 
 <script>
-import { ref, computed, watch, onMounted, reactive } from "vue";
+import { ref, computed, watch, onMounted, reactive, nextTick } from "vue";
 import { useStore } from "vuex";
 import { formatTime } from "@/utils";
 import comments from "@/components/comments";
@@ -79,6 +75,11 @@ export default {
 
       const { tlyric, lrc, lyricUser, transUser } = lyricParser(lyric.value);
       data.lyric = mergeLrcTlyric(lrc, tlyric);
+
+      nextTick(() => {
+        // 防止新旧activeLyricIndex相同，不会滚动到指定位置
+        scrollToActiveLyric();
+      });
     });
 
     watch(
@@ -96,6 +97,8 @@ export default {
     });
 
     function scrollToActiveLyric() {
+      console.log(itemRefs[activeLyricIndex.value]);
+
       if (activeLyricIndex.value !== -1) {
         if (scroller && itemRefs[activeLyricIndex.value]) {
           scroller.scrollToElement(itemRefs[activeLyricIndex.value], 200, 0, true);
@@ -179,8 +182,16 @@ export default {
 .song-content
   flex: 1
   margin-left: 100px
-.song-name
+.name-wrap
   margin-bottom: 16px
+.mv-tag
+  display: inline-block
+  margin-left: 8px
+  padding: 2px
+  border: 1px solid
+  color: #d33a31
+  cursor: pointer
+  font-weight: 100
 .artists
   font-size: 14px
   margin-bottom: 20px

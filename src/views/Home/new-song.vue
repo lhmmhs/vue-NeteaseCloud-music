@@ -17,7 +17,7 @@
 import { onMounted, reactive, ref } from "vue";
 import { requestNewSong } from "@/api";
 import songCard from "@/components/song-card";
-import { nomalizeSong } from "@/utils";
+import { nomalizeSong, songUrl } from "@/utils";
 import { useStore } from "vuex";
 
 export default {
@@ -33,7 +33,25 @@ export default {
       songs.value = result;
     };
 
-    const playSong = (song) => {
+    const playSong = (rawSong) => {
+      const {
+        id,
+        name,
+        picUrl,
+        song: { artists, duration, album, mvid },
+      } = rawSong;
+
+      const song = {
+        id,
+        name,
+        picUrl,
+        artists,
+        duration,
+        album,
+        url: songUrl(id),
+        mvid,
+      };
+
       store.dispatch("music/playSong", song);
     };
 

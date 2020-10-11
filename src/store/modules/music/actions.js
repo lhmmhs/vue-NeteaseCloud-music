@@ -6,7 +6,6 @@ export default {
 
     commit("setCurrentSong", song);
     commit("setPlaylist", song);
-
     // 请求歌曲歌词
     const lyric = await requestLyric(song.id);
     commit("setLyric", lyric);

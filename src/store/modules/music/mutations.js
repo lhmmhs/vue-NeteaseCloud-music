@@ -1,6 +1,5 @@
 export default {
   setCurrentSong(state, song) {
-    song.url = `https://music.163.com/song/media/outer/url?id=${song.id}.mp3 `;
     state.currentSong = song;
   },
   setPlayingState(state, playing) {
@@ -24,6 +23,6 @@ export default {
     state.lyric = lyric;
   },
   setPlaylist(state, song) {
-    state.playlist.push(song);
+    state.playlist.unshift(song);
   },
 };

@@ -1,14 +1,14 @@
-const HtmlWebpackPlugin = require("html-webpack-plugin")
-const { VueLoaderPlugin } = require("vue-loader")
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
-const path = require("path")
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { VueLoaderPlugin } = require("vue-loader");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const path = require("path");
 // const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
 // const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
 
-let filename = "[name].[chunkhash:8].js"
+let filename = "[name].[chunkhash:8].js";
 
 if (process.env.NODE_ENV === "production") {
-  filename = "js/[name].[chunkhash:8].js"
+  filename = "js/[name].[chunkhash:8].js";
 }
 
 module.exports = {
@@ -24,7 +24,8 @@ module.exports = {
         loader: "vue-loader",
       },
       {
-        test: /\.js$/,
+        test: /\.m?js$/,
+        exclude: /(node_modules|bower_components)/,
         loader: "babel-loader",
       },
       {
@@ -58,4 +59,4 @@ module.exports = {
   devServer: {
     port: 8000,
   },
-}
+};
