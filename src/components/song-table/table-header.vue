@@ -8,9 +8,10 @@ export default {
     return () => (
       <thead>
         <tr>
-          {props.columns.map((vnode) => (
-            <th>{vnode.type.methods.renderHeader.call(vnode)}</th>
-          ))}
+          {props.columns.map((vnode) => {
+            const { width } = vnode.props;
+            return <th style={{ width }}>{vnode.type.methods.renderHeader.call(vnode)}</th>;
+          })}
         </tr>
       </thead>
     );
@@ -18,4 +19,8 @@ export default {
 };
 </script>
 
-<style lang="stylus"></style>
+<style lang="stylus">
+th
+  text-align: left
+  height: 50px
+</style>

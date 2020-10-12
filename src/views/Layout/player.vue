@@ -97,8 +97,6 @@ export default {
     });
 
     function scrollToActiveLyric() {
-      console.log(itemRefs[activeLyricIndex.value]);
-
       if (activeLyricIndex.value !== -1) {
         if (scroller && itemRefs[activeLyricIndex.value]) {
           scroller.scrollToElement(itemRefs[activeLyricIndex.value], 200, 0, true);

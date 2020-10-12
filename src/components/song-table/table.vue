@@ -1,9 +1,9 @@
 <template>
-  <table>
-    <div class="hidden-columns"><slot></slot></div>
+  <table cellspacing="0">
     <table-header :columns="columns" />
-    <table-body :columns="columns" :data="tableData" />
+    <table-body :columns="columns" :data="tableData" @row-dblclick="rowDblClick" />
   </table>
+  <div class="hidden-columns"><slot></slot></div>
 </template>
 
 <script>
@@ -18,11 +18,17 @@ export default {
     },
   },
   components: { tableHeader, tableBody },
-  setup(props, { slots }) {
+  emits: ["row-dblclick"],
+  setup(props, { slots, emit }) {
     const columns = slots.default();
+
+    const rowDblClick = (row) => {
+      emit("row-dblclick", row);
+    };
 
     return {
       columns,
+      rowDblClick,
     };
   },
 };
@@ -32,4 +38,7 @@ export default {
 table
   width: 100%
   font-size: 13px
+  table-layout: fixed
+.hidden-columns
+  display: none
 </style>

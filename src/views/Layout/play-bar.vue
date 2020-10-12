@@ -12,7 +12,7 @@
         <div class="img-wrap">
           <div v-if="!currentSong.picUrl" class="img-loading"></div>
           <img v-else class="song-img" :src="`${currentSong.picUrl}?param=40y40`" />
-          <div class="mask" @click="player">
+          <div class="mask" @click="togglePlayerShow">
             <i class="iconfont icon-component" :class="[playerShow ? 'icon-shrink' : 'icon-open']"></i>
           </div>
         </div>
@@ -41,9 +41,9 @@
     </div>
     <div class="right">
       <i class="iconfont icon-sequence"></i>
-      <i class="iconfont icon-playlist"></i>
+      <i class="iconfont icon-playlist" @click="togglePlaylistShow"></i>
     </div>
-    <!-- <div class="playlist">
+    <div class="playlist" v-if="playlistShow">
       <div class="playlist-title">播放列表</div>
       <div class="playlist-bar">
         <div class="total">总共{{ playlist.length }}首</div>
@@ -52,8 +52,21 @@
           <span>清空</span>
         </div>
       </div>
-      <div class="playlist-songs"></div>
-    </div> -->
+      <div class="playlist-songs">
+        <song-table :tableData="playlist" @row-dblclick="playSong">
+          <song-table-column prop="name" label="音乐标题" width="45%">
+            <template v-slot:default="slotProps">
+              <span>{{ slotProps.song.name }}</span>
+              <router-link class="mv-tag" v-if="slotProps.song.mvid" :to="`/mv/${slotProps.song.mvid}`">
+                <i class="iconfont icon-mv"></i>
+              </router-link>
+            </template>
+          </song-table-column>
+          <song-table-column prop="artists" label="歌手" :formatter="getArtists" width="40%" />
+          <song-table-column prop="duration" label="时长" :formatter="formatTime" width="15%" />
+        </song-table>
+      </div>
+    </div>
     <audio
       ref="audio"
       class="audio"
@@ -70,7 +83,7 @@
 <script>
 import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { useStore } from "vuex";
-import { formatTime } from "@/utils";
+import { formatTime, getArtists } from "@/utils";
 import songTable from "@/components/song-table/table";
 import songTableColumn from "@/components/song-table/table-column";
 
@@ -87,6 +100,7 @@ export default {
 
     // ref
     const progressBarCurWidth = ref(0);
+    const playlistShow = ref(false);
 
     let progressBarWidth = 0;
     let btnClientX = 0;
@@ -221,10 +235,18 @@ export default {
       audio.value.pause();
     }
 
-    function player() {
+    function togglePlayerShow() {
       if (!currentSong.value.url) return;
-
       store.commit("music/setPlayerShow", !playerShow.value);
+    }
+
+    function togglePlaylistShow() {
+      playlistShow.value = !playlistShow.value;
+    }
+
+    function playSong(song) {
+      console.log(song);
+      // store.dispatch("music/playSong", song);
     }
 
     // life
@@ -239,6 +261,7 @@ export default {
       progressBarWrap,
 
       progressBarCurWidth,
+      playlistShow,
 
       // computed
       currentSong,
@@ -258,11 +281,15 @@ export default {
       mouseleaveHandler,
       progressChange,
 
+      playSong,
+      togglePlaylistShow,
+
       play,
       next,
       prev,
-      player,
+      togglePlayerShow,
       formatTime,
+      getArtists,
     };
   },
 };
@@ -385,11 +412,18 @@ export default {
 .playlist
   position: fixed
   right: 0
+  top: 50px
   bottom: 60px
   width: 380px
   font-size: 13px
   background: #fff
-  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.2)
+  box-shadow: -1px 0 4px rgba(0, 0, 0, 0.2)
+  >>> .row
+    height: 30px
+    font-size: 12px
+  >>> .mv-tag
+    color: #d33a31
+    vertical-align: -2px
 .playlist-title
   text-align: center
   height: 45px
@@ -401,7 +435,6 @@ export default {
   justify-content: space-between
   align-items: center
 .playlist-songs
-  height: 280px
   overflow-y: auto
 .remove
   line-height: 40px
