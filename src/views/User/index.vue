@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { reactive, onMounted } from "vue";
+import { reactive, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { requestUserDetail, requestUserRecord, requestUserPlaylist } from "@/api";
 import { formatPlayCount } from "@/utils";
@@ -52,35 +52,34 @@ export default {
   components: { playlistCard },
 
   setup() {
-    const {
-      params: { uid },
-    } = useRoute();
+    const route = useRoute();
 
     const data = reactive({
       user: null,
       playlist: [],
     });
 
-    const getUserDetail = async () => {
+    watch(
+      () => route.params,
+      (params) => {
+        getUserDetail(params.uid);
+        getUserPlaylist(params.uid);
+      }
+    );
+
+    const getUserDetail = async (uid) => {
       const user = await requestUserDetail(uid);
       data.user = user;
     };
 
-    const getUserRecord = async () => {
-      const record = await requestUserRecord(uid);
-    };
-
-    const getUserPlaylist = async () => {
+    const getUserPlaylist = async (uid) => {
       const { playlist } = await requestUserPlaylist(uid);
       data.playlist = playlist;
     };
 
     onMounted(() => {
-      getUserDetail();
-      // 听歌次数
-      // 有权限限制
-      // getUserRecord();
-      getUserPlaylist();
+      getUserDetail(route.params.uid);
+      getUserPlaylist(route.params.uid);
     });
 
     return {

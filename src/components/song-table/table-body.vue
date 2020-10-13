@@ -15,20 +15,19 @@ export default {
 
     return () => (
       <tbody>
-        {props.data.map((song, index) => {
-          return (
-            <tr class="row" onDblclick={dblclick.bind(null, song)}>
-              {props.columns.map((vnode) => {
-                const { width } = vnode.props;
-                return (
-                  <td class="column" style={{ width }}>
-                    {vnode.type.methods.renderCell.call(vnode, song, index)}
-                  </td>
-                );
-              })}
-            </tr>
-          );
-        })}
+        {props.data.map((song, index) => (
+          <tr class="row" onDblclick={dblclick.bind(null, song)}>
+            {props.columns.map((vnode) => {
+              const { width } = vnode.props;
+              const { renderCell } = vnode.type.setup();
+              return (
+                <td class="column" style={{ width }}>
+                  {renderCell.call(vnode, song, index)}
+                </td>
+              );
+            })}
+          </tr>
+        ))}
       </tbody>
     );
   },

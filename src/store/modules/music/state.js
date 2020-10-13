@@ -1,3 +1,5 @@
+import { playModeMap } from "@/utils/config";
+
 export default {
   // 当前播放歌曲
   currentSong: {},
@@ -9,8 +11,10 @@ export default {
   move: false,
   // player show
   playerShow: false,
-  // 歌词
-  lyric: [],
   // 播放列表
   playlist: [],
+  //
+  playlistShow: false,
+  // 播放模式
+  playMode: playModeMap.sequence.code,
 };

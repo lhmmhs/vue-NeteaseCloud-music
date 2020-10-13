@@ -1,13 +1,13 @@
-import { requestLyric } from "@/api";
-
 export default {
-  async playSong({ commit, state }, song) {
-    if (song.id === state.currentSong.id) return;
-
+  async playSong({ commit, state }, rawSong) {
+    // 1.单曲循环
+    // 2.歌单中只有1首歌曲
+    // 触发watch
+    const song = Object.assign({}, rawSong);
     commit("setCurrentSong", song);
-    commit("setPlaylist", song);
-    // 请求歌曲歌词
-    const lyric = await requestLyric(song.id);
-    commit("setLyric", lyric);
+    // 不在播放列表内的歌曲才添加
+    if (state.playlist.every((item) => item.id !== song.id)) {
+      commit("setPlaylist", song);
+    }
   },
 };

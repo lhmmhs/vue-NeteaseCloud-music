@@ -10,7 +10,8 @@ export default {
         <tr>
           {props.columns.map((vnode) => {
             const { width } = vnode.props;
-            return <th style={{ width }}>{vnode.type.methods.renderHeader.call(vnode)}</th>;
+            const { renderHeader } = vnode.type.setup();
+            return <th style={{ width }}>{renderHeader.call(vnode)}</th>;
           })}
         </tr>
       </thead>

@@ -8,12 +8,13 @@ export default {
     type: String,
   },
 
-  methods: {
-    renderHeader() {
+  setup() {
+    function renderHeader() {
       const { label } = this.props;
       return <div class="cell">{label}</div>;
-    },
-    renderCell(data, index) {
+    }
+
+    function renderCell(data, index) {
       const { prop, formatter, type } = this.props;
 
       if (type && type === "index") {
@@ -25,15 +26,13 @@ export default {
         return <div class="cell">{this.children.default({ song: data })}</div>;
       }
 
-      const deep = (props, data) => {
-        props.forEach((prop) => (data = data[prop]));
-        return data;
-      };
+      return <div class="cell">{formatter ? formatter(data[prop]) : data[prop]}</div>;
+    }
 
-      // 嵌套属性
-      let value = prop.split(".").length > 1 ? deep(prop.split("."), data) : data[prop];
-      return <div class="cell">{formatter ? formatter(value) : value}</div>;
-    },
+    return {
+      renderHeader,
+      renderCell,
+    };
   },
 
   render() {},

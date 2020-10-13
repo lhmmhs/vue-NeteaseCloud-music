@@ -19,13 +19,14 @@
               <span class="slash">/</span>
             </span>
           </div>
-          <scroller class="lyric" @init="initHandler" :data="data.lyric">
+          <scroller v-if="data.lyric.length" class="lyric" @init="initHandler" :data="data.lyric">
             <ul class="lrcs">
               <li class="lrc" v-for="(item, index) in data.lyric" :ref="setItemRef" :class="getLyricActive(index)">
                 <p class="lrc-txt" v-for="content in item.contents">{{ content }}</p>
               </li>
             </ul>
           </scroller>
+          <div class="empty" v-else>暂无歌词</div>
         </div>
       </div>
       <comments :id="currentSong.id" :type="'music'" />
@@ -41,6 +42,7 @@ import comments from "@/components/comments";
 import scroller from "@/components/scroller";
 import { lyricParser, mergeLrcTlyric } from "@/utils";
 import { useRoute } from "vue-router";
+import { requestLyric } from "@/api";
 
 export default {
   components: { comments, scroller },
@@ -60,7 +62,6 @@ export default {
     const playing = computed(() => store.state.music.playing);
     const currentTime = computed(() => store.state.music.currentTime);
     const move = computed(() => store.state.music.move);
-    const lyric = computed(() => store.state.music.lyric);
 
     const activeLyricIndex = computed(() => {
       let res = [];
@@ -68,13 +69,22 @@ export default {
       return res.length === 0 ? -1 : res.length - 1;
     });
 
+    watch(currentSong, async (newSong, prevSong) => {
+      if (newSong.id === prevSong.id) return;
+
+      const lyric = await requestLyric(newSong.id);
+      if (lyric.lrc) {
+        const { tlyric, lrc, lyricUser, transUser } = lyricParser(lyric);
+        data.lyric = mergeLrcTlyric(lrc, tlyric);
+      } else {
+        data.lyric = [];
+      }
+    });
+
     watch(playerShow, () => {
       // 每次打开歌词界面，清空旧的dom引用
       // 因为每次打开都需要重新渲染
       itemRefs = [];
-
-      const { tlyric, lrc, lyricUser, transUser } = lyricParser(lyric.value);
-      data.lyric = mergeLrcTlyric(lrc, tlyric);
 
       nextTick(() => {
         // 防止新旧activeLyricIndex相同，不会滚动到指定位置
@@ -212,6 +222,9 @@ export default {
     font-weight: 700
 .lrc-txt
   margin-bottom: 8px
+.empty
+  line-height: 100px
+  font-size: 13px
 .fade-enter-active, .fade-leave-active
   transition: all 0.5s ease
 .fade-enter-from, .fade-leave-to

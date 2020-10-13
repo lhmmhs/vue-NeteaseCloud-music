@@ -19,10 +19,13 @@ export default {
   setPlayerShow(state, playerShow) {
     state.playerShow = playerShow;
   },
-  setLyric(state, lyric) {
-    state.lyric = lyric;
-  },
   setPlaylist(state, song) {
     state.playlist.unshift(song);
+  },
+  setPlaylistShow(state, playlistShow) {
+    state.playlistShow = playlistShow;
+  },
+  setPlayMode(state, mode) {
+    state.playMode = mode;
   },
 };

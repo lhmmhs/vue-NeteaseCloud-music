@@ -5,7 +5,12 @@
       <song-table-column type="index" width="40px" />
       <song-table-column prop="picUrl" width="80px">
         <template v-slot:default="slotProps">
-          <img class="song-img" :src="`${slotProps.song.picUrl}?param=40y40`" />
+          <div class="img-wrap">
+            <img class="song-img" :src="`${slotProps.song.picUrl}?param=40y40`" />
+            <div class="icon-play-wrap">
+              <i class="iconfont icon-play"></i>
+            </div>
+          </div>
         </template>
       </song-table-column>
       <song-table-column prop="name" label="音乐标题" width="30%">
@@ -16,7 +21,11 @@
       </song-table-column>
       <song-table-column prop="duration" label="时长" :formatter="formatTime" width="5%" />
       <song-table-column prop="artists" label="歌手" :formatter="getArtists" width="25%" />
-      <song-table-column prop="album.name" label="专辑" width="25%" />
+      <song-table-column label="专辑" width="25%">
+        <template v-slot:default="slotProps">
+          <span>{{ slotProps.song.album.name }}</span>
+        </template>
+      </song-table-column>
     </song-table>
   </div>
 </template>
@@ -79,10 +88,6 @@ export default {
 <style lang="stylus" scoped>
 .song-list
   margin-top: 50px
-.song-img
-  display: block
-  margin: auto
-  border-radius: 5px
 .mv-tag
   display: inline-block
   margin-left: 8px
@@ -91,4 +96,29 @@ export default {
   color: #d33a31
   cursor: pointer
   font-size: 12px
+.img-wrap
+  position: relative
+  width: 40px
+  cursor: pointer
+  box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, 0.2)
+.song-img
+  display: block
+  margin: auto
+.icon-play
+  font-size: 14px
+  color: #d33a31
+.icon-play-wrap
+  position: absolute
+  left: 0
+  right: 0
+  bottom: 0
+  top: 0
+  width: 20px
+  height: 20px
+  margin: auto
+  background: rgba(255, 255, 255, 0.7)
+  border-radius: 50%
+  display: flex
+  align-items: center
+  justify-content: center
 </style>
