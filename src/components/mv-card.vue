@@ -1,7 +1,7 @@
 <template>
   <div class="mv-card">
-    <div class="play-count">{{ playCount }}</div>
     <div class="img-wrap">
+      <div class="play-count">{{ playCount }}</div>
       <router-link :to="`/mv/${id}`">
         <img class="mv-img" :src="`${picUrl}?param=500y260`" />
       </router-link>
@@ -24,8 +24,6 @@ export default {
 .mv-card
   position: relative
   width: 24%
-  overflow: hidden
-  border-radius: 5px
 .play-count
   position: absolute
   left: 0
@@ -40,6 +38,7 @@ export default {
 .img-wrap
   position: relative
   overflow: hidden
+  height: 133px
   border-radius: 5px
   cursor: pointer
   &:hover

@@ -1,19 +1,20 @@
 <template>
   <div class="artist">
-    <h2>{{ data.artist.name }}</h2>
+    <h2 class="artist-name">{{ data.artist.name }}</h2>
     <div class="artist-img-wrap">
       <img v-if="data.artist.picUrl" :src="`${data.artist.picUrl}?param=640y300`" />
       <div v-else class="img-loading"></div>
     </div>
     <div class="tabs">
-      <span>热门作品</span>
-      <span>所有专辑</span>
-      <span>相关MV</span>
+      <span class="tabs-item">热门作品</span>
+      <span class="tabs-item">所有专辑</span>
+      <span class="tabs-item">相关MV</span>
     </div>
 
-    <div class="hot-song">
+    <div class="hot-song" v-if="">
       <song-table :tableData="data.hotSongs" @row-dblclick="playSong">
-        <song-table-column width="5%">
+        <song-table-column type="index" width="5%"></song-table-column>
+        <song-table-column width="10%">
           <template v-slot:default="slotProps">
             <div class="img-wrap">
               <img class="al-img" :src="`${slotProps.song.al.picUrl}?param=40y40`" />
@@ -37,21 +38,36 @@
         </song-table-column>
       </song-table>
     </div>
+
+    <div class="mvs">
+      <mv-card
+        v-for="mv in data.mvs"
+        :id="mv.id"
+        :name="mv.name"
+        :picUrl="mv.picUrl"
+        :artists="mv.artist.name"
+        :playCount="mv.playCount"
+        :key="mv.id"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 import { useRoute } from "vue-router";
+import { useStore } from "vuex";
 import { requestArtists, requestArtistAlbum, requestArtistMv } from "@/api";
 import { onMounted, reactive, watch } from "vue";
-import { formatTime } from "@/utils";
+import { formatTime, formatPlayCount, songUrl } from "@/utils";
 import songTable from "@/components/song-table/table";
 import songTableColumn from "@/components/song-table/table-column";
+import mvCard from "@/components/mv-card";
 
 export default {
-  components: { songTable, songTableColumn },
+  components: { songTable, songTableColumn, mvCard },
   setup() {
     const route = useRoute();
+    const store = useStore();
 
     const data = reactive({
       artist: {},
@@ -65,23 +81,50 @@ export default {
       (params) => {}
     );
 
-    const getArtists = async (id) => {
-      const { artist, hotSongs } = await requestArtists(id);
-      data.artist = artist;
-      data.hotSongs = hotSongs;
+    const nomalizeMv = (mv) => {
+      let { id, name, imgurl, artist, playCount } = mv;
+
+      return {
+        id,
+        name,
+        picUrl: imgurl,
+        artist,
+        playCount: formatPlayCount(playCount),
+      };
     };
 
     const getArtistAlbum = async (id) => {
-      const { hotAlbums } = await requestArtistAlbum(id);
+      const { hotAlbums } = await requestArtistAlbum(id, 20, 1);
       data.albums = hotAlbums;
     };
 
     const getArtistMv = async (id) => {
-      const { mvs } = await requestArtistMv(id);
-      data.mvs = mvs;
+      const { mvs } = await requestArtistMv(id, 20, 1);
+      data.mvs = mvs.map((mv) => nomalizeMv(mv));
     };
 
-    const playSong = () => {};
+    const getArtists = async (id) => {
+      const { artist, hotSongs } = await requestArtists(id, 20, 1);
+      data.artist = artist;
+      data.hotSongs = hotSongs;
+    };
+
+    const playSong = (rawSong) => {
+      const { al, ar, dt, id, name, mv } = rawSong;
+
+      const song = {
+        id,
+        name,
+        picUrl: al.picUrl,
+        album: al,
+        duration: dt,
+        artists: ar,
+        url: songUrl(id),
+        mvid: mv,
+      };
+
+      store.dispatch("music/playSong", song);
+    };
 
     onMounted(() => {
       getArtists(route.params.id);
@@ -100,10 +143,20 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.artist
+  padding: 20px
+.artist-name, .artist-img-wrap
+  margin-bottom: 16px
 .img-loading
   width: 640px
   height: 300px
   background: #eee
+.tabs
+  margin-bottom: 20px
+  text-align: center
+.tabs-item
+  margin: 0 20px
+  cursor: pointer
 .mv-tag
   display: inline-block
   margin-left: 8px
@@ -137,4 +190,13 @@ export default {
   display: flex
   align-items: center
   justify-content: center
+.mvs
+  display: flex
+  flex-wrap: wrap
+  justify-content: space-between
+  &::after
+    content: ''
+    width: 100%
+.mv-card
+  margin-bottom: 10px
 </style>

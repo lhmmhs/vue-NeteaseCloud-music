@@ -1,7 +1,10 @@
 import { request } from "@/utils";
 
-export const requestArtists = (id) => request.get(`/artists?id=${id}`);
+export const requestArtists = (id, limit, page) =>
+  request.get(`/artists?id=${id}&limit=${limit}&offset=${limit * (page - 1)}`);
 
-export const requestArtistAlbum = (id) => request.get(`/artist/album?id=${id}`);
+export const requestArtistAlbum = (id, limit, page) =>
+  request.get(`/artist/album?id=${id}&limit=${limit}&offset=${limit * (page - 1)}`);
 
-export const requestArtistMv = (id) => request.get(`/artist/mv?id=${id}`);
+export const requestArtistMv = (id, limit, page) =>
+  request.get(`/artist/mv?id=${id}&limit=${limit}&offset=${limit * (page - 1)}`);

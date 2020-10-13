@@ -12,18 +12,6 @@ export function nomalizeSong(data) {
   };
 }
 
-export function nomalizeMv(data) {
-  let { id, name, picUrl, artists, playCount } = data;
-
-  return {
-    id,
-    name,
-    picUrl,
-    artists: getArtists(artists),
-    playCount: formatPlayCount(playCount),
-  };
-}
-
 export function getArtists(artists) {
   return (artists || []).map((e) => e.name).join("/");
 }
