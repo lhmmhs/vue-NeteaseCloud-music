@@ -3,11 +3,12 @@
     <h3>最新音乐</h3>
     <div class="list">
       <song-card
-        v-bind="nomalizeSong(song)"
-        :order="index"
         v-for="(song, index) in songs"
-        :key="song.id"
-        @click.native="playSong(song)"
+        :order="index"
+        :picUrl="song.picUrl"
+        :name="song.name"
+        :artists="song.song.artists"
+        @playSong="playSong(song)"
       />
     </div>
   </div>

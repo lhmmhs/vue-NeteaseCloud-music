@@ -4,3 +4,4 @@ export * from "./mv";
 export * from "./user";
 export * from "./player";
 export * from "./artist";
+export * from "./album";

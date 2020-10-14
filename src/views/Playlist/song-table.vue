@@ -20,10 +20,16 @@
         </template>
       </song-table-column>
       <song-table-column prop="duration" label="时长" :formatter="formatTime" width="5%" />
-      <song-table-column prop="artists" label="歌手" :formatter="getArtists" width="25%" />
+      <song-table-column prop="artists" label="歌手" width="25%">
+        <template v-slot:default="slotProps">
+          <router-link class="artist" v-for="artist in slotProps.song.artists" :to="`/artist/${artist.id}`">
+            {{ artist.name }}
+          </router-link>
+        </template>
+      </song-table-column>
       <song-table-column label="专辑" width="25%">
         <template v-slot:default="slotProps">
-          <span>{{ slotProps.song.album.name }}</span>
+          <router-link :to="`/album/${slotProps.song.album.id}`">{{ slotProps.song.album.name }}</router-link>
         </template>
       </song-table-column>
     </song-table>
@@ -121,4 +127,6 @@ export default {
   display: flex
   align-items: center
   justify-content: center
+.artist
+  margin-right: 4px
 </style>

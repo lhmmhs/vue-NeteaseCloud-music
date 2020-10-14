@@ -8,7 +8,7 @@
     </div>
     <div class="mv-content">
       <p :title="name" class="mv-name">{{ name }}</p>
-      <p :title="artists" class="artists">{{ artists }}</p>
+      <p :title="artists" class="artists">{{ artists || "" }}</p>
     </div>
   </div>
 </template>
@@ -24,6 +24,7 @@ export default {
 .mv-card
   position: relative
   width: 24%
+  margin-right: 1%
 .play-count
   position: absolute
   left: 0
@@ -38,7 +39,6 @@ export default {
 .img-wrap
   position: relative
   overflow: hidden
-  height: 133px
   border-radius: 5px
   cursor: pointer
   &:hover

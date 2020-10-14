@@ -5,6 +5,7 @@ import Playlist from "@/views/Playlist";
 import Mv from "@/views/Mv";
 import User from "@/views/User";
 import Artist from "@/views/Artist";
+import Album from "@/views/Album";
 
 const routes = [
   { path: "/", component: Home },
@@ -13,6 +14,7 @@ const routes = [
   { path: "/mv/:id", component: Mv },
   { path: "/user/:uid", component: User },
   { path: "/artist/:id", component: Artist },
+  { path: "/album/:id", component: Album },
 ];
 
 const router = createRouter({

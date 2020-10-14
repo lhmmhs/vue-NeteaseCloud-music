@@ -1,7 +1,7 @@
 <template>
   <div class="song-card">
     <div class="order">{{ order + 1 > 9 ? order + 1 : "0" + (order + 1) }}</div>
-    <div class="img-wrap">
+    <div class="img-wrap" @click="onClick">
       <img :src="`${picUrl}?param=60y60`" />
       <div class="play-icon-wrap">
         <i class="play-icon iconfont icon-play"></i>
@@ -9,7 +9,11 @@
     </div>
     <div class="song-content">
       <p :title="name" class="song-name">{{ name }}</p>
-      <p :title="artists" class="artists">{{ artists }}</p>
+      <p class="artists">
+        <router-link class="artist" v-for="artist in artists" :to="`/artist/${artist.id}`">{{
+          artist.name
+        }}</router-link>
+      </p>
     </div>
   </div>
 </template>
@@ -17,6 +21,13 @@
 <script>
 export default {
   props: ["order", "picUrl", "name", "artists"],
+  emits: ["playSong"],
+  setup(props, { emit }) {
+    const onClick = () => {
+      emit("playSong");
+    };
+    return { onClick };
+  },
 };
 </script>
 
@@ -28,7 +39,6 @@ export default {
   width: 50%
   padding: 8px 10px
   font-size: 13px
-  cursor: pointer
   &:hover
     background: #f1f1f1
 .img-wrap
@@ -37,6 +47,7 @@ export default {
   height: 60px
   margin: 0 10px
   box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, 0.2)
+  cursor: pointer
 .play-icon-wrap
   position: absolute
   left: 0
@@ -62,4 +73,6 @@ export default {
   white-space: nowrap
   overflow: hidden
   text-overflow: ellipsis
+.artist
+  margin-right: 4px
 </style>

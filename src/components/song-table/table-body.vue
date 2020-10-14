@@ -37,6 +37,6 @@ export default {
 <style lang="stylus">
 .row
   height: 60px
-  &:hover
-    background: #f9f9f9
+  &:nth-child(odd)
+    background: #ededed
 </style>

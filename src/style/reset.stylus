@@ -4,6 +4,8 @@ html, body, div, ul, ol, li, h1, h2, h3, h4, h5, h6, p, table, thead, tbody, tr,
 a
   text-decoration: none
   color: #333
+  &:hover
+    text-decoration: underline
 li
   list-style: none
 input

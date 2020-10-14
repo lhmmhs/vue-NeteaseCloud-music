@@ -1,17 +1,19 @@
 <template>
   <div class="artist">
-    <h2 class="artist-name">{{ data.artist.name }}</h2>
-    <div class="artist-img-wrap">
-      <img v-if="data.artist.picUrl" :src="`${data.artist.picUrl}?param=640y300`" />
-      <div v-else class="img-loading"></div>
+    <div class="artist-profile">
+      <h2 class="artist-name">{{ data.artist.name }}</h2>
+      <div class="artist-img-wrap">
+        <img class="artist-img" v-if="data.artist.picUrl" :src="`${data.artist.picUrl}?param=640y300`" />
+        <div v-else class="img-loading"></div>
+      </div>
     </div>
-    <div class="tabs">
-      <span class="tabs-item">热门作品</span>
-      <span class="tabs-item">所有专辑</span>
-      <span class="tabs-item">相关MV</span>
+    <div class="tabs" @click="toggleTabBar">
+      <span :data-key="tab.key" class="tabs-item" :class="{ active: activeIndex === tab.key }" v-for="tab in tabMap">
+        {{ tab.txt }}
+      </span>
     </div>
 
-    <div class="hot-song" v-if="">
+    <div v-if="activeIndex === 'hotSongs'" class="tabs-content hot-song">
       <song-table :tableData="data.hotSongs" @row-dblclick="playSong">
         <song-table-column type="index" width="5%"></song-table-column>
         <song-table-column width="10%">
@@ -39,13 +41,25 @@
       </song-table>
     </div>
 
-    <div class="mvs">
+    <div v-else-if="activeIndex === 'albums'" class="tabs-content albums">
+      <div class="album-card" v-for="album in data.albums">
+        <div class="album-img-wrap">
+          <router-link :to="`/album/${album.id}`">
+            <img class="album-img" :src="`${album.picUrl}?param=150y150`" />
+          </router-link>
+          <div class="dish"></div>
+        </div>
+        <p class="album-name">{{ album.name }}</p>
+        <p class="crete-time">{{ formatDate(album.publishTime) }}</p>
+      </div>
+    </div>
+
+    <div v-else-if="activeIndex === 'mvs'" class="tabs-content mvs">
       <mv-card
         v-for="mv in data.mvs"
         :id="mv.id"
         :name="mv.name"
         :picUrl="mv.picUrl"
-        :artists="mv.artist.name"
         :playCount="mv.playCount"
         :key="mv.id"
       />
@@ -57,11 +71,18 @@
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 import { requestArtists, requestArtistAlbum, requestArtistMv } from "@/api";
-import { onMounted, reactive, watch } from "vue";
-import { formatTime, formatPlayCount, songUrl } from "@/utils";
+import { onMounted, reactive, watch, ref, nextTick } from "vue";
+import { formatTime, formatPlayCount, songUrl, formatDate } from "@/utils";
 import songTable from "@/components/song-table/table";
 import songTableColumn from "@/components/song-table/table-column";
 import mvCard from "@/components/mv-card";
+
+const tabMap = {
+  hotSongs: { key: "hotSongs", txt: "热门作品" },
+  albums: { key: "albums", txt: "歌手专辑" },
+  mvs: { key: "mvs", txt: "相关MV" },
+  // profile: { key: "profile", txt: "个人简介" },
+};
 
 export default {
   components: { songTable, songTableColumn, mvCard },
@@ -75,6 +96,8 @@ export default {
       albums: [],
       mvs: [],
     });
+
+    const activeIndex = ref("hotSongs");
 
     watch(
       () => route.params,
@@ -126,6 +149,11 @@ export default {
       store.dispatch("music/playSong", song);
     };
 
+    const toggleTabBar = (e, data) => {
+      if (e.target.tagName !== "SPAN") return;
+      activeIndex.value = e.target.dataset.key;
+    };
+
     onMounted(() => {
       getArtists(route.params.id);
       getArtistAlbum(route.params.id);
@@ -134,9 +162,12 @@ export default {
 
     return {
       data,
-
+      tabMap,
       playSong,
       formatTime,
+      formatDate,
+      toggleTabBar,
+      activeIndex,
     };
   },
 };
@@ -144,19 +175,28 @@ export default {
 
 <style lang="stylus" scoped>
 .artist
-  padding: 20px
-.artist-name, .artist-img-wrap
-  margin-bottom: 16px
+  padding: 20px 40px
+.artist-name
+  margin-bottom: 20px
+.artist-profile
+  margin-bottom: 50px
 .img-loading
   width: 640px
   height: 300px
   background: #eee
+.artist-img
+  display: block
 .tabs
-  margin-bottom: 20px
-  text-align: center
+  margin-bottom: 50px
+  border-bottom: 1px solid #ccc
 .tabs-item
-  margin: 0 20px
+  display: inline-block
+  line-height: 30px
+  margin-right: 30px
   cursor: pointer
+  &.active
+    color: #d33a31
+    font-weight: 700
 .mv-tag
   display: inline-block
   margin-left: 8px
@@ -196,7 +236,48 @@ export default {
   justify-content: space-between
   &::after
     content: ''
-    width: 100%
+    flex: auto
 .mv-card
+  margin-bottom: 16px
+.albums
+  display: flex
+  flex-wrap: wrap
+  justify-content: space-between
+  &::after
+    content: ''
+    flex: auto
+.album-card
+  width: 20%
+  margin-bottom: 16px
+.album-name
+  width: 150px
+  text-overflow: ellipsis
+  overflow: hidden
+  white-space: nowrap
+  font-size: 13px
+  margin-bottom: 2px
+.crete-time
+  font-size: 12px
+  color: #666
+.album-img-wrap
+  position: relative
+  width: 150px
+  height: 150px
   margin-bottom: 10px
+.album-img
+  width: 100%
+  height: 100%
+  border: 1px solid #333
+.dish
+  position: absolute
+  top: 0
+  bottom: 0
+  right: -30px
+  z-index: -1
+  width: 120px
+  height: 120px
+  margin: auto
+  border-radius: 50%
+  background: #333
+  box-shadow: 0 0 10px #999
 </style>

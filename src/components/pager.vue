@@ -2,12 +2,7 @@
   <ul class="pager" @click="onPagerClick">
     <li :class="{ active: data.currentPage === 1 }" v-if="pageCount > 0" class="number">1</li>
     <li class="more btn-quickprev" v-if="data.showPrevMore">...</li>
-    <li
-      v-for="pager in pagers"
-      :key="pager"
-      :class="{ active: data.currentPage === pager }"
-      class="number"
-    >
+    <li v-for="pager in pagers" :key="pager" :class="{ active: data.currentPage === pager }" class="number">
       {{ pager }}
     </li>
     <li class="more btn-quicknext" v-if="data.showNextMore">...</li>
@@ -131,7 +126,6 @@ export default {
     watch(
       () => data.currentPage,
       (page) => {
-        console.log(page);
         emit("currentPage", page);
       }
     );

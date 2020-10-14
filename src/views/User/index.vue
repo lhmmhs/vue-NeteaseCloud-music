@@ -92,7 +92,7 @@ export default {
 
 <style lang="stylus" scoped>
 .user
-  padding: 20px 100px
+  padding: 20px 40px
 .profile
   display: flex
 .avatar-wrap

@@ -16,7 +16,6 @@
               <router-link :to="`/artist/${artist.id}`" class="artist">
                 {{ artist.name }}
               </router-link>
-              <span class="slash">/</span>
             </span>
           </div>
           <scroller v-if="data.lyric.length" class="lyric" @init="initHandler" :data="data.lyric">
@@ -207,8 +206,6 @@ export default {
   font-size: 13px
   color: #4996d1
   margin: 0 6px
-.slash
-  font-size: 12px
 .lyric
   position: relative
   height: 350px
