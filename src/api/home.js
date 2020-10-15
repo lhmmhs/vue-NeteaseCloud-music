@@ -9,3 +9,6 @@ export const requestMvs = () => request.get("/personalized/mv");
 export const requestPlaylist = () => request.get("/personalized?limit=10");
 
 export const requestSongDetail = (id) => request.get(`/song/detail?ids=${id}`);
+
+export const requestSearchSuggest = (keywords) =>
+  request.get(`/search/suggest?keywords=${keywords}`);

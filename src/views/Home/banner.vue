@@ -50,6 +50,11 @@ export default {
       } else if (banner.targetType === 10) {
         // 专辑
         router.push(`/album/${banner.targetId}`);
+      } else if (banner.targetType === 3000) {
+        window.open(banner.url);
+      } else if (banner.targetType === 1004) {
+        // mv
+        router.push(`/mv/${banner.targetId}`);
       }
     };
 

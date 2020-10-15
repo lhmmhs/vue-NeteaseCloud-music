@@ -53,6 +53,7 @@
       @ended.native="endHandler"
       @pause.native="pauseHandler"
       @play.native="playHandler"
+      @error.native="errorHandler"
     />
   </div>
 </template>
@@ -156,6 +157,10 @@ export default {
 
       progressBarCurWidth.value = clacValue;
       calcCurrentTime(clacValue);
+    }
+
+    function errorHandler(e) {
+      console.log(e);
     }
 
     function progressChange(e) {
@@ -268,6 +273,7 @@ export default {
       mouseupHandler,
       mousemoveHandler,
       mouseleaveHandler,
+      errorHandler,
       progressChange,
 
       play,

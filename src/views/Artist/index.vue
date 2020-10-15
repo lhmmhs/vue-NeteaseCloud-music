@@ -4,7 +4,6 @@
       <h2 class="artist-name">{{ data.artist.name }}</h2>
       <div class="artist-img-wrap">
         <img class="artist-img" v-if="data.artist.picUrl" :src="`${data.artist.picUrl}?param=640y300`" />
-        <div v-else class="img-loading"></div>
       </div>
     </div>
     <div class="tabs" @click="toggleTabBar">
@@ -101,7 +100,11 @@ export default {
 
     watch(
       () => route.params,
-      (params) => {}
+      (params) => {
+        getArtists(params.id);
+        getArtistAlbum(params.id);
+        getArtistMv(params.id);
+      }
     );
 
     const nomalizeMv = (mv) => {
@@ -180,7 +183,7 @@ export default {
   margin-bottom: 20px
 .artist-profile
   margin-bottom: 50px
-.img-loading
+.artist-img-wrap
   width: 640px
   height: 300px
   background: #eee

@@ -7,7 +7,9 @@
       <h2 class="title">{{ playlistDetail.name }}</h2>
       <div class="creator">
         <img class="creator__avatar" :src="`${playlistDetail.creator.avatarUrl}?param=40y40`" />
-        <span class="creator__name">{{ playlistDetail.creator.nickname }}</span>
+        <router-link :to="`/user/${playlistDetail.creator.userId}`" class="creator__name">
+          {{ playlistDetail.creator.nickname }}
+        </router-link>
       </div>
       <div class="create">{{ formatDate(playlistDetail.createTime) }} 创建</div>
       <div class="tags">标签：{{ (playlistDetail.tags || []).map((e) => e).join("/") }}</div>
@@ -51,6 +53,8 @@ export default {
   margin-right: 10px
   border-radius: 50%
   overflow: hidden
+.creator__name
+  color: #4996d1
 .create
   margin-top: 10px
 .tags

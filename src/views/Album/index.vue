@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { requestAlbumDetail, requestAlbum } from "@/api";
+import { requestAlbum } from "@/api";
 import { useRoute } from "vue-router";
 import { onMounted, reactive, watch } from "vue";
 import { formatDate, formatTime, songUrl } from "@/utils";
@@ -72,9 +72,12 @@ export default {
       songs: [],
     });
 
-    const getAlbumDetail = async (id) => {
-      const data = await requestAlbumDetail(id);
-    };
+    watch(
+      () => route.params,
+      (params) => {
+        getAlbum(params.id);
+      }
+    );
 
     const getAlbum = async (id) => {
       const { album, songs } = await requestAlbum(id);
@@ -100,7 +103,6 @@ export default {
     };
 
     onMounted(() => {
-      // getAlbumDetail(route.params.id);
       getAlbum(route.params.id);
     });
 
