@@ -1,7 +1,7 @@
 <template>
   <div class="menu">
     <router-link class="link" to="/">发现音乐</router-link>
-    <router-link class="link" to="/FM">私人FM</router-link>
+    <router-link class="link" to="/playlist">推荐歌单</router-link>
   </div>
 </template>
 
@@ -16,6 +16,7 @@
   height: 45px
   padding: 12px 20px
   box-sizing: border-box
+  font-size: 14px
   cursor: pointer
   &.router-link-exact-active
     background: #e7e7e7
