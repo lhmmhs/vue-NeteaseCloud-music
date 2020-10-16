@@ -32,9 +32,6 @@ import pager from "@/components/pager";
 export default {
   components: { playlistCard, pager },
   setup() {
-      
-
-
     const data = reactive({
       tags: {},
       playlist: [],
@@ -43,7 +40,7 @@ export default {
     const playlistTotal = ref(0);
     const category = ref("全部");
 
-    const pager = ref(null)
+    const pager = ref(null);
 
     const getPlaylistCatlist = async () => {
       const { categories, sub } = await requestPlaylitCatlist();
@@ -70,6 +67,7 @@ export default {
       if (e.target.tagName !== "LI") return;
       let cat = e.target.innerText;
       getTopPlaylist(cat, 1);
+      pager.value.changeCurrentPage(1);
       category.value = cat;
     };
 
@@ -81,7 +79,6 @@ export default {
       getPlaylistCatlist();
       getTopPlaylist(category.value, 1);
     });
-
 
     return {
       data,
@@ -121,4 +118,7 @@ export default {
   margin-top: 50px
   >>> .playlist-card
     margin-bottom: 20px
+  &::after
+    content: ''
+    flex: auto
 </style>

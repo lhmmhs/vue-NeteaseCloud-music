@@ -122,6 +122,10 @@ export default {
       }
     }
 
+    const changeCurrentPage = (page) => {
+      data.currentPage = page;
+    };
+
     // watch
     watch(
       () => data.currentPage,
@@ -136,6 +140,7 @@ export default {
       pagers,
 
       onPagerClick,
+      changeCurrentPage,
     };
   },
 };

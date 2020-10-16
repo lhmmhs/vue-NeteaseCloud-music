@@ -2,6 +2,8 @@
   <div class="menu">
     <router-link class="link" to="/">发现音乐</router-link>
     <router-link class="link" to="/playlist">推荐歌单</router-link>
+    <router-link class="link" to="/mvs">最新mv</router-link>
+    <router-link class="link" to="/artists">歌手</router-link>
   </div>
 </template>
 
