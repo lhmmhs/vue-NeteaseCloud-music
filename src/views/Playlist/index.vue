@@ -4,7 +4,7 @@
       <div class="tag-gruop" v-for="taggroup in data.tags">
         <div class="tag-category">{{ taggroup.category }}</div>
         <ul class="tag-list" @click="toggleTag">
-          <li class="tag" v-for="tag in taggroup.arr">{{ tag }}</li>
+          <li class="tag" v-for="tag in taggroup.arr" :class="{ active: category === tag }">{{ tag }}</li>
         </ul>
       </div>
     </div>
@@ -54,8 +54,8 @@ export default {
       });
     };
 
-    const getTopPlaylist = async (cat, page) => {
-      const { playlists, total } = await requestTopPlaylist(cat, 50, page);
+    const getTopPlaylist = async (page) => {
+      const { playlists, total } = await requestTopPlaylist(category.value, 50, page);
       data.playlist = playlists;
       // 首次请求分类歌单设置总数
       if (page < 2) {
@@ -66,24 +66,26 @@ export default {
     const toggleTag = (e) => {
       if (e.target.tagName !== "LI") return;
       let cat = e.target.innerText;
-      getTopPlaylist(cat, 1);
+      
       pager.value.changeCurrentPage(1);
       category.value = cat;
+      getTopPlaylist(1);
     };
 
     const currentPageChange = (currentPage) => {
-      getTopPlaylist(category.value, currentPage);
+      getTopPlaylist(currentPage);
     };
 
     onMounted(() => {
       getPlaylistCatlist();
-      getTopPlaylist(category.value, 1);
+      getTopPlaylist(1);
     });
 
     return {
       data,
       playlistTotal,
       pager,
+      category,
 
       toggleTag,
       currentPageChange,

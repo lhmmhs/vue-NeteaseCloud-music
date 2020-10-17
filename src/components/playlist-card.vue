@@ -1,11 +1,8 @@
 <template>
   <div class="playlist-card">
     <div class="img-wrap">
-      <router-link :to="`/playlist/${id}`">
+      <router-link class="palylist-link" :to="`/playlist/${id}`">
         <img class="playlist-img" :src="`${picUrl}?param=300y300`" />
-        <!-- <div class="play-icon-wrap">
-          <i class="play-icon iconfont icon-play"></i>
-        </div> -->
       </router-link>
       <div class="play-count">{{ playCount }}</div>
     </div>
@@ -44,21 +41,14 @@ export default {
 .img-wrap
   position: relative
   overflow: hidden
+  padding: 50% 0
   border-radius: 5px
-.play-icon
-  font-size: 16px
-  color: #fff
-.play-icon-wrap
+.palylist-link
   position: absolute
-  bottom: 10px
-  right: 10px
-  display: flex
-  justify-content: center
-  align-items: center
-  width: 30px
-  height: 30px
-  border: 2px solid #ffffff
-  border-radius: 50%
+  left: 0
+  right: 0
+  bottom: 0
+  top: 0
 .playlist-img
   display: block
   width: 100%

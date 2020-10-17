@@ -1,17 +1,22 @@
 <template>
   <div class="header">
     <div></div>
-    <div class="search-wrap">
-      <input class="search" v-model="keyWord" @input="changeKeyWord" type="text" placeholder="搜索" />
-      <div class="result-panel" v-if="resultPanelShow">
-        <div class="sub-panel" v-for="item in data.result">
-          <div class="sub-panel-name">{{ resultMap[item.key] }}</div>
-          <ul class="list">
-            <li class="name" v-for="content in item.content" @click="clickHandler(content, item.key)">
-              {{ content.name }}
-            </li>
-          </ul>
+    <div class="right">
+      <div class="search-wrap">
+        <input class="search" v-model="keyWord" @input="changeKeyWord" type="text" placeholder="搜索" />
+        <div class="result-panel" v-if="resultPanelShow">
+          <div class="sub-panel" v-for="item in data.result">
+            <div class="sub-panel-name">{{ resultMap[item.key] }}</div>
+            <ul class="list">
+              <li class="name" v-for="content in item.content" @click="clickHandler(content, item.key)">
+                {{ content.name }}
+              </li>
+            </ul>
+          </div>
         </div>
+      </div>
+      <div class="header-user">
+        <router-link to="/login" class="login">登录</router-link>
       </div>
     </div>
   </div>
@@ -107,11 +112,14 @@ export default {
   height: 50px
   padding: 0 30px
   background: #f9f9f9
+.right
+  display: flex
 .search-wrap
   position: relative
   width: 160px
   height: 25px
   background: #ededed
+  margin-right 20px
 .search
   height: 100%
   width: 100%
@@ -146,4 +154,9 @@ export default {
   padding-left: 6px
   &:hover
     background: #cecece
+.login
+  display inline-block
+  padding 2px 4px
+  font-size 13px
+  cursor pointer
 </style>
