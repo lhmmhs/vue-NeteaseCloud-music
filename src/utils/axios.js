@@ -5,6 +5,7 @@ const BASE_URL = "http://localhost:3000";
 function createBaseInstance() {
   const instance = axios.create({
     baseURL: BASE_URL,
+    withCredentials: true
   });
 
   instance.interceptors.response.use(handleResponse, handleError);

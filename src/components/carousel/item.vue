@@ -186,8 +186,4 @@ export default defineComponent({
   opacity: 0.24
   -webkit-transition: 0.2s
   transition: 0.2s
-.el-carousel__item:nth-child(2n)
-  background-color: #99a9bf
-.el-carousel__item:nth-child(2n+1)
-  background-color: #d3dce6
 </style>

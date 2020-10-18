@@ -8,6 +8,7 @@
         <div class="name-wrap">
           <span class="user-name">{{ data.user.profile.nickname }}</span>
           <span class="level">Lv.{{ data.user.level }}</span>
+          <button class="follow" @click="follow">关注</button>
         </div>
         <div>
           <div class="event">
@@ -42,9 +43,9 @@
 </template>
 
 <script>
-import { reactive, onMounted, watch } from "vue";
+import { reactive, onMounted, watch, computed } from "vue";
 import { useRoute } from "vue-router";
-import { requestUserDetail, requestUserRecord, requestUserPlaylist } from "@/api";
+import { requestUserDetail, requestUserRecord, requestUserPlaylist, requestFollow } from "@/api";
 import { formatPlayCount } from "@/utils";
 import playlistCard from "@/components/playlist-card";
 
@@ -77,6 +78,21 @@ export default {
       data.playlist = playlist;
     };
 
+    const getUserFollows = async (uid) => {
+      const data = await requestUserFollows(uid);
+    };
+
+    const follow = async (id) => {
+      const { code } = await requestFollow(route.params.uid, 1);
+      if (code === 200) {
+        // 关注成功
+      } else if (code === 201) {
+        // 已关注
+      } else if (code === 301) {
+        // 未登录
+      }
+    };
+
     onMounted(() => {
       getUserDetail(route.params.uid);
       getUserPlaylist(route.params.uid);
@@ -85,6 +101,7 @@ export default {
     return {
       data,
       formatPlayCount,
+      follow,
     };
   },
 };
@@ -131,4 +148,13 @@ export default {
   &:after
     content: ''
     flex: auto
+.follow
+  width: 70px
+  height: 30px
+  line-height: 30px
+  margin-left 20px
+  cursor: pointer
+  border: 1px solid #c3c3c3
+  background: linear-gradient(#fefefe, #f3f3f3)
+  border-radius: 2px
 </style>
