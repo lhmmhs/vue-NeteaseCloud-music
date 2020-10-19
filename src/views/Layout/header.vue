@@ -116,10 +116,11 @@ export default {
   left: 0
   right: 0
   top: 0
-  z-index: 4 
+  z-index: 4
   height: 50px
   padding: 0 30px
   background: #f9f9f9
+  box-shadow: 2px -2px 4px #000
 .right
   display: flex
   align-items: center

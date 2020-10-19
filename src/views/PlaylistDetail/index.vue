@@ -19,7 +19,9 @@
         <!-- <div class="description">{{description}}</div> -->
         <div class="actions">
           <btn class="btn" @click="">播放全部</btn>
-          <btn class="btn" @click="subscribe">{{ data.playlistDetail.subscribed ? "取消收藏" : "收藏" }}</btn>
+          <btn class="btn" :disabled="profile.userId === data.playlistDetail.userId" @click="subscribe">
+            {{ data.playlistDetail.subscribed ? "取消收藏" : "收藏" }}
+          </btn>
         </div>
       </div>
     </div>
@@ -36,15 +38,16 @@ import { formatDate } from "@/utils";
 
 import songTable from "./song-table";
 import comments from "@/components/comments";
-import { useStore } from 'vuex';
+import { useStore } from "vuex";
 
 export default {
   components: { songTable, comments },
   setup() {
     const route = useRoute();
-    const store = useStore()
+    const store = useStore();
 
-    const status = computed(() => store.state.user.status)
+    const status = computed(() => store.state.user.status);
+    const profile = computed(() => store.state.user.profile);
 
     watch(
       () => route.params,
@@ -64,7 +67,7 @@ export default {
 
     const subscribe = async () => {
       // 未登录
-      if(!status.value) return
+      if (!status.value) return;
 
       const t = data.playlistDetail.subscribed ? 0 : 1;
       const { code } = await requestPlaylistSubscribe(data.playlistDetail.id, t);
@@ -81,6 +84,7 @@ export default {
       data,
       formatDate,
       subscribe,
+      profile,
     };
   },
 };

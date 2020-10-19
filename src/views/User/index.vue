@@ -8,7 +8,7 @@
         <div class="name-wrap">
           <span class="user-name">{{ data.user.profile.nickname }}</span>
           <span class="level">Lv.{{ data.user.level }}</span>
-          <btn v-if="profile.userId != $route.params.uid"  @click="follow">
+          <btn v-if="profile.userId != $route.params.uid" @click="follow">
             {{ data.user.profile.followed ? "取消关注" : "关注" }}
           </btn>
         </div>
@@ -28,7 +28,7 @@
         </div>
       </div>
     </div>
-    <div class="playlist">
+    <div class="playlist" v-if="data.createPlaylist.length">
       <h3>创建的歌单</h3>
       <div class="list">
         <playlist-card
@@ -41,7 +41,7 @@
         />
       </div>
     </div>
-    <div class="playlist">
+    <div class="playlist" v-if="data.collectPlaylist.length">
       <h3>收藏的歌单</h3>
       <div class="list">
         <playlist-card
@@ -96,9 +96,8 @@ export default {
 
     const getUserPlaylist = async (uid) => {
       const { playlist } = await requestUserPlaylist(uid);
-      data.createPlaylist = playlist.filter(item => item.userId == uid)
-      data.collectPlaylist = playlist.filter(item => item.userId != uid)
-
+      data.createPlaylist = playlist.filter((item) => item.userId == uid);
+      data.collectPlaylist = playlist.filter((item) => item.userId != uid);
     };
 
     const getUserFollows = async (uid) => {
@@ -107,7 +106,7 @@ export default {
 
     const follow = async () => {
       // 未登录
-      if(!status.value) return
+      if (!status.value) return;
 
       let t = data.user.profile.followed ? 0 : 1;
       const { code } = await requestFollow(route.params.uid, t);
@@ -156,7 +155,7 @@ export default {
   font-size: 28px
   margin-right: 10px
 .level
-  margin-right 20px
+  margin-right: 20px
 .event, .fans, .follows
   flex-direction: column
   display: inline-flex
@@ -178,5 +177,4 @@ export default {
   &:after
     content: ''
     flex: auto
-
 </style>

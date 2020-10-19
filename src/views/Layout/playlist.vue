@@ -1,44 +1,55 @@
 <template>
-  <div class="playlist" v-if="playlistShow">
-    <div class="playlist-title">播放列表</div>
-    <div class="playlist-bar">
-      <div class="total">总共{{ playlist.length }}首</div>
-      <div class="remove">
-        <i class="iconfont icon-remove"></i>
-        <span>清空</span>
+  <transition name="fade">
+    <div class="playlist" v-if="playlistShow">
+      <div class="playlist-title">播放列表</div>
+      <div class="playlist-bar">
+        <div class="total">总共{{ playlist.length }}首</div>
+        <div class="remove">
+          <i class="iconfont icon-remove"></i>
+          <span>清空</span>
+        </div>
+      </div>
+      <div class="playlist-songs">
+        <song-table :tableData="playlist" @row-dblclick="playSong">
+          <song-table-column prop="name" label="音乐标题" width="45%">
+            <template v-slot:default="slotProps">
+              <span>{{ slotProps.song.name }}</span>
+              <router-link class="mv-tag" v-if="slotProps.song.mvid" :to="`/mv/${slotProps.song.mvid}`">
+                <i class="iconfont icon-mv"></i>
+              </router-link>
+            </template>
+          </song-table-column>
+          <song-table-column prop="artists" label="歌手" :formatter="getArtists" width="40%" />
+          <song-table-column prop="duration" label="时长" :formatter="formatTime" width="15%" />
+        </song-table>
       </div>
     </div>
-    <div class="playlist-songs">
-      <song-table :tableData="playlist" @row-dblclick="playSong">
-        <song-table-column prop="name" label="音乐标题" width="45%">
-          <template v-slot:default="slotProps">
-            <span>{{ slotProps.song.name }}</span>
-            <router-link class="mv-tag" v-if="slotProps.song.mvid" :to="`/mv/${slotProps.song.mvid}`">
-              <i class="iconfont icon-mv"></i>
-            </router-link>
-          </template>
-        </song-table-column>
-        <song-table-column prop="artists" label="歌手" :formatter="getArtists" width="40%" />
-        <song-table-column prop="duration" label="时长" :formatter="formatTime" width="15%" />
-      </song-table>
-    </div>
-  </div>
+  </transition>
 </template>
 
 <script>
-import { ref, computed, watch, onMounted, nextTick } from "vue";
+import { computed, watch } from "vue";
 import { useStore } from "vuex";
 import { formatTime, getArtists } from "@/utils";
 import songTable from "@/components/song-table/table";
 import songTableColumn from "@/components/song-table/table-column";
+import { useRoute } from "vue-router";
 
 export default {
   components: { songTable, songTableColumn },
   setup() {
     const store = useStore();
+    const route = useRoute();
 
     const playlist = computed(() => store.state.music.playlist);
     const playlistShow = computed(() => store.state.music.playlistShow);
+
+    watch(
+      () => route.path,
+      () => {
+        store.commit("music/setPlaylistShow", false);
+      }
+    );
 
     function playSong(song) {
       store.dispatch("music/playSong", song);
@@ -92,4 +103,8 @@ export default {
 .icon-remove
   vertical-align: -2px
   font-size: 17px
+.fade-enter-active, .fade-leave-active
+  transition: all 0.5s ease
+.fade-enter-from, .fade-leave-to
+  transform: translateX(100%)
 </style>
