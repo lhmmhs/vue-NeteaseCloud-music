@@ -25,6 +25,8 @@ export default {
 
       if (code === 200) {
         localStorage.setItem("profile", JSON.stringify(profile));
+        store.commit("user/setProfile", profile);
+        store.commit("user/setStatus", true);
       } else if (code === 502) {
         // 密码错误
       } else if (code === 400) {

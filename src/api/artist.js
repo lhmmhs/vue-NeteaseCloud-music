@@ -12,4 +12,4 @@ export const requestArtistMv = (id, limit, page) =>
 export const requestArtistList = (initial, type, area, limit) =>
   request.get(`/artist/list?initial=${initial}&limit=${limit}&type=${type}&area=${area}`);
 
-export const requestArtistSub = (id, t) => request.post("/artist/sub", { id, t });
+export const requestArtistSub = (id, t) => request.post(`/artist/sub?timestamp=${+new Date}`, { id, t });

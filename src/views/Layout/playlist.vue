@@ -62,7 +62,7 @@ export default {
 .playlist
   position: fixed
   right: 0
-  top: 50px
+  top: 0
   bottom: 60px
   z-index: 4
   width: 380px

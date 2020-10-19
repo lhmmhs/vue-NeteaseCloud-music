@@ -1,42 +1,86 @@
 <template>
   <div class="playlist">
-    <detail :playlistDetail="data.playlistDetail" />
+    <div class="detail" v-if="data.playlistDetail.coverImgUrl">
+      <div class="img-wrap">
+        <img :src="`${data.playlistDetail.coverImgUrl}?param=200y200`" />
+      </div>
+      <div class="content">
+        <h2 class="title">{{ data.playlistDetail.name }}</h2>
+        <div class="creator">
+          <img class="creator__avatar" :src="`${data.playlistDetail.creator.avatarUrl}?param=40y40`" />
+          <router-link :to="`/user/${data.playlistDetail.creator.userId}`" class="creator__name">
+            {{ data.playlistDetail.creator.nickname }}
+          </router-link>
+        </div>
+        <div class="create">{{ formatDate(data.playlistDetail.createTime) }} 创建</div>
+        <div class="tags" v-if="data.playlistDetail.tags.length">
+          标签：{{ (data.playlistDetail.tags || []).map((e) => e).join("/") }}
+        </div>
+        <!-- <div class="description">{{description}}</div> -->
+        <div class="actions">
+          <btn class="btn" @click="">播放全部</btn>
+          <btn class="btn" @click="subscribe">{{ data.playlistDetail.subscribed ? "取消收藏" : "收藏" }}</btn>
+        </div>
+      </div>
+    </div>
     <song-table :songs="data.playlistDetail.tracks" />
-    <comments :id="id" :type="'playlist'" />
+    <comments :id="$route.params.id" :type="'playlist'" />
   </div>
 </template>
 
 <script>
-import { onMounted, computed, ref, provide, reactive } from "vue";
+import { onMounted, computed, ref, provide, reactive, watch } from "vue";
 import { useRoute } from "vue-router";
-import { requestPlaylistDetail } from "@/api";
-import detail from "./detail";
+import { requestPlaylistDetail, requestPlaylistSubscribe } from "@/api";
+import { formatDate } from "@/utils";
+
 import songTable from "./song-table";
 import comments from "@/components/comments";
+import { useStore } from 'vuex';
 
 export default {
-  components: { detail, songTable, comments },
+  components: { songTable, comments },
   setup() {
-    const {
-      params: { id },
-    } = useRoute();
+    const route = useRoute();
+    const store = useStore()
+
+    const status = computed(() => store.state.user.status)
+
+    watch(
+      () => route.params,
+      (params) => {
+        getPlaylistDetail(params.id);
+      }
+    );
 
     const data = reactive({
       playlistDetail: {},
     });
 
-    const getPlaylistDetail = async () => {
+    const getPlaylistDetail = async (id) => {
       const { playlist } = await requestPlaylistDetail(id);
       data.playlistDetail = playlist;
     };
 
+    const subscribe = async () => {
+      // 未登录
+      if(!status.value) return
+
+      const t = data.playlistDetail.subscribed ? 0 : 1;
+      const { code } = await requestPlaylistSubscribe(data.playlistDetail.id, t);
+      if (code === 200) {
+        data.playlistDetail.subscribed = !data.playlistDetail.subscribed;
+      }
+    };
+
     onMounted(() => {
-      getPlaylistDetail();
+      getPlaylistDetail(route.params.id);
     });
 
     return {
       data,
-      id,
+      formatDate,
+      subscribe,
     };
   },
 };
@@ -45,9 +89,38 @@ export default {
 <style lang="stylus" scoped>
 .playlist
   padding: 20px 40px
-.tab
+.detail
+  display: flex
+.img-wrap
+  width: 200px
+  height: 200px
+  box-shadow: 1px 1px 2px #ccc
+  border-radius: 5px
+.content
+  margin-left: 20px
+.title
+  font-size: 20px
+.creator
+  display: flex
+  align-items: center
+  margin-top: 10px
+.creator__avatar
+  width: 40px
+  height: 40px
+  margin-right: 10px
+  border-radius: 50%
+  overflow: hidden
+.creator__name
+  color: #4996d1
+.create
+  margin-top: 10px
+  font-size: 13px
+  color: #999
+.tags
+  margin-top: 10px
+  font-size: 14px
+.actions
   margin-top: 20px
-  border-bottom: 2px solid #d33a31
-.tab__item
-  margin: 0 15px
+.btn
+  margin-right: 10px
 </style>

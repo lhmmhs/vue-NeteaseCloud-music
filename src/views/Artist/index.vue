@@ -3,8 +3,9 @@
     <div class="artist-profile">
       <div class="profile-header">
         <span class="artist-name">{{ data.artist.name }} </span>
-        <span></span>
-        <button class="follow" @click="artistSub">关注</button>
+        <span class="artist-alias">
+          {{ (data.artist.alias || []).map((alia) => alia).join(" / ") }}
+        </span>
       </div>
       <div class="artist-img-wrap">
         <img class="artist-img" v-if="data.artist.picUrl" :src="`${data.artist.picUrl}?param=640y300`" />
@@ -73,7 +74,7 @@
 <script>
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
-import { requestArtists, requestArtistAlbum, requestArtistMv, requestArtistSub } from "@/api";
+import { requestArtists, requestArtistAlbum, requestArtistMv } from "@/api";
 import { onMounted, reactive, watch, ref, nextTick } from "vue";
 import { formatTime, formatPlayCount, songUrl, formatDate } from "@/utils";
 import songTable from "@/components/song-table/table";
@@ -161,16 +162,7 @@ export default {
       activeIndex.value = e.target.dataset.key;
     };
 
-    const artistSub = () => {
-      const {code} = requestArtistSub(route.params.id, 1);
-      if(code===200) {
-        // 关注成功
-      } else if(code === 408) {
-        // 已关注
-      } else if(code === 301) {
-        // 未登陆
-      }
-    };
+    
 
     onMounted(() => {
       getArtists(route.params.id);
@@ -187,7 +179,6 @@ export default {
       formatTime,
       formatDate,
       toggleTabBar,
-      artistSub,
     };
   },
 };
@@ -201,7 +192,7 @@ export default {
 .artist-img-wrap
   width: 640px
   height: 300px
-  border 1px solid #999
+  border: 1px solid #999
 .artist-img
   display: block
 .tabs
@@ -299,18 +290,13 @@ export default {
   background: #333
   box-shadow: 0 0 10px #999
 .profile-header
-  display flex
+  display: flex
+  align-items: flex-end
   margin-bottom: 16px
-
 .artist-name
   font-size: 24px
-.follow
-  width: 70px
-  height: 30px
-  line-height: 30px
-  margin-left: 20px
-  cursor: pointer
-  border: 1px solid #c3c3c3
-  background: linear-gradient(#fefefe, #f3f3f3)
-  border-radius: 2px
+.artist-alias
+  margin-left: 10px
+  color: #999
+  font-size: 14px
 </style>

@@ -16,14 +16,19 @@
         </div>
       </div>
       <div class="header-user">
-        <router-link to="/login" class="login">登录</router-link>
+        <div v-if="profile.userId" class="avatar-wrap">
+          <router-link :to="`/user/${profile.userId}`">
+            <img class="avatar" :src="`${profile.avatarUrl}?param=30y30`" />
+          </router-link>
+        </div>
+        <router-link v-else to="/login" class="login">登录</router-link>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import debounce from "lodash/debounce";
 import { requestSearchSuggest, requestSongDetail } from "@/api";
 import { useRouter } from "vue-router";
@@ -48,6 +53,8 @@ export default {
 
     const resultPanelShow = ref(false);
     const keyWord = ref("");
+
+    const profile = computed(() => store.state.user.profile);
 
     const changeKeyWord = debounce(async (e) => {
       if (e.target.value === "") return;
@@ -89,6 +96,7 @@ export default {
 
     return {
       data,
+      profile,
       keyWord,
       changeKeyWord,
       resultMap,
@@ -108,18 +116,19 @@ export default {
   left: 0
   right: 0
   top: 0
-  z-index: 10
+  z-index: 4 
   height: 50px
   padding: 0 30px
   background: #f9f9f9
 .right
   display: flex
+  align-items: center
 .search-wrap
   position: relative
   width: 160px
   height: 25px
   background: #ededed
-  margin-right 20px
+  margin-right: 20px
 .search
   height: 100%
   width: 100%
@@ -154,9 +163,14 @@ export default {
   padding-left: 6px
   &:hover
     background: #cecece
+.avatar-wrap
+  width: 30px
+  height: 30px
+  border-radius: 50%
+  overflow: hidden
 .login
-  display inline-block
-  padding 2px 4px
-  font-size 13px
-  cursor pointer
+  display: inline-block
+  padding: 2px 4px
+  font-size: 13px
+  cursor: pointer
 </style>

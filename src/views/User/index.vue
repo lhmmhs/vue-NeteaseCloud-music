@@ -8,7 +8,9 @@
         <div class="name-wrap">
           <span class="user-name">{{ data.user.profile.nickname }}</span>
           <span class="level">Lv.{{ data.user.level }}</span>
-          <button class="follow" @click="follow">关注</button>
+          <btn v-if="profile.userId != $route.params.uid"  @click="follow">
+            {{ data.user.profile.followed ? "取消关注" : "关注" }}
+          </btn>
         </div>
         <div>
           <div class="event">
@@ -27,10 +29,23 @@
       </div>
     </div>
     <div class="playlist">
-      <h3>歌单</h3>
+      <h3>创建的歌单</h3>
       <div class="list">
         <playlist-card
-          v-for="item in data.playlist"
+          v-for="item in data.createPlaylist"
+          :key="item.id"
+          :id="item.id"
+          :name="item.name"
+          :picUrl="item.coverImgUrl"
+          :playCount="formatPlayCount(item.playCount)"
+        />
+      </div>
+    </div>
+    <div class="playlist">
+      <h3>收藏的歌单</h3>
+      <div class="list">
+        <playlist-card
+          v-for="item in data.collectPlaylist"
           :key="item.id"
           :id="item.id"
           :name="item.name"
@@ -48,17 +63,23 @@ import { useRoute } from "vue-router";
 import { requestUserDetail, requestUserRecord, requestUserPlaylist, requestFollow } from "@/api";
 import { formatPlayCount } from "@/utils";
 import playlistCard from "@/components/playlist-card";
+import { useStore } from "vuex";
 
 export default {
   components: { playlistCard },
 
   setup() {
     const route = useRoute();
+    const store = useStore();
 
     const data = reactive({
       user: null,
-      playlist: [],
+      createPlaylist: [],
+      collectPlaylist: [],
     });
+
+    const profile = computed(() => store.state.user.profile);
+    const status = computed(() => store.state.user.status);
 
     watch(
       () => route.params,
@@ -75,17 +96,23 @@ export default {
 
     const getUserPlaylist = async (uid) => {
       const { playlist } = await requestUserPlaylist(uid);
-      data.playlist = playlist;
+      data.createPlaylist = playlist.filter(item => item.userId == uid)
+      data.collectPlaylist = playlist.filter(item => item.userId != uid)
+
     };
 
     const getUserFollows = async (uid) => {
       const data = await requestUserFollows(uid);
     };
 
-    const follow = async (id) => {
-      const { code } = await requestFollow(route.params.uid, 1);
+    const follow = async () => {
+      // 未登录
+      if(!status.value) return
+
+      let t = data.user.profile.followed ? 0 : 1;
+      const { code } = await requestFollow(route.params.uid, t);
       if (code === 200) {
-        // 关注成功
+        data.user.profile.followed = !data.user.profile.followed;
       } else if (code === 201) {
         // 已关注
       } else if (code === 301) {
@@ -102,6 +129,7 @@ export default {
       data,
       formatPlayCount,
       follow,
+      profile,
     };
   },
 };
@@ -127,6 +155,8 @@ export default {
 .user-name
   font-size: 28px
   margin-right: 10px
+.level
+  margin-right 20px
 .event, .fans, .follows
   flex-direction: column
   display: inline-flex
@@ -148,13 +178,5 @@ export default {
   &:after
     content: ''
     flex: auto
-.follow
-  width: 70px
-  height: 30px
-  line-height: 30px
-  margin-left 20px
-  cursor: pointer
-  border: 1px solid #c3c3c3
-  background: linear-gradient(#fefefe, #f3f3f3)
-  border-radius: 2px
+
 </style>
