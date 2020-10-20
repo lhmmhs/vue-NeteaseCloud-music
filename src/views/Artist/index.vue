@@ -104,11 +104,11 @@ export default {
     const activeIndex = ref("hotSongs");
 
     watch(
-      () => route.params,
-      (params) => {
-        getArtists(params.id);
-        getArtistAlbum(params.id);
-        getArtistMv(params.id);
+      () => route.params.id,
+      (id) => {
+        getArtists(id);
+        getArtistAlbum(id);
+        getArtistMv(id);
       }
     );
 

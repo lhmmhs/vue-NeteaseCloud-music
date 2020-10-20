@@ -73,9 +73,9 @@ export default {
     });
 
     watch(
-      () => route.params,
-      (params) => {
-        getAlbum(params.id);
+      () => route.params.id,
+      (id) => {
+        getAlbum(id);
       }
     );
 

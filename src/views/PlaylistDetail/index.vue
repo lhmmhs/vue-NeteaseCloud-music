@@ -50,9 +50,9 @@ export default {
     const profile = computed(() => store.state.user.profile);
 
     watch(
-      () => route.params,
-      (params) => {
-        getPlaylistDetail(params.id);
+      () => route.params.id,
+      (id) => {
+        getPlaylistDetail(id);
       }
     );
 

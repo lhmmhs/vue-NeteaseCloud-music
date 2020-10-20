@@ -82,10 +82,10 @@ export default {
     const status = computed(() => store.state.user.status);
 
     watch(
-      () => route.params,
-      (params) => {
-        getUserDetail(params.uid);
-        getUserPlaylist(params.uid);
+      () => route.params.uid,
+      (uid) => {
+        getUserDetail(uid);
+        getUserPlaylist(uid);
       }
     );
 
