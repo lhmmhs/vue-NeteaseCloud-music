@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { computed, inject, onMounted, reactive, ref } from "vue";
+import { computed, inject, onMounted, reactive, ref, watch } from "vue";
 import pager from "@/components/pager";
 import comment from "@/components/comment";
 import {
@@ -40,6 +40,20 @@ const PLAYLIST_TYPE = "playlist";
 const MV_TYPE = "mv";
 const ALBUM_TYPE = "album";
 
+const commentRequestMap = {
+  [PLAYLIST_TYPE]: requestPlaylistComments,
+  [MUSIC_TYPE]: requestMusicComments,
+  [MV_TYPE]: requestMvComments,
+  [ALBUM_TYPE]: requestAlbumComments,
+};
+
+const commentTypeMap = {
+  [PLAYLIST_TYPE]: 2,
+  [MUSIC_TYPE]: 0,
+  [MV_TYPE]: 1,
+  [ALBUM_TYPE]: 3,
+};
+
 export default {
   props: ["id", "type"],
   components: { pager, comment },
@@ -47,20 +61,6 @@ export default {
     const store = useStore();
 
     const status = computed(() => store.state.user.status);
-
-    const commentRequestMap = {
-      [PLAYLIST_TYPE]: requestPlaylistComments,
-      [MUSIC_TYPE]: requestMusicComments,
-      [MV_TYPE]: requestMvComments,
-      [ALBUM_TYPE]: requestAlbumComments,
-    };
-
-    const commentTypeMap = {
-      [PLAYLIST_TYPE]: 2,
-      [MUSIC_TYPE]: 0,
-      [MV_TYPE]: 1,
-      [ALBUM_TYPE]: 3,
-    };
 
     const commentRequest = commentRequestMap[props.type];
     const commentType = commentTypeMap[props.type];
@@ -71,6 +71,13 @@ export default {
     });
 
     let commentsTotal = ref(0);
+
+    watch(
+      () => props.id,
+      (id) => {
+        getComments(id, 1);
+      }
+    );
 
     const getComments = async (id, page) => {
       const { comments, hotComments, total } = await commentRequest(id, 20, page);
