@@ -47,7 +47,7 @@
         </song-table-column>
       </song-table>
     </div>
-    <comments :id="id" type="album" />
+    <comments :id="$route.params.id" type="album" />
   </div>
 </template>
 
@@ -107,7 +107,6 @@ export default {
     });
 
     return {
-      id: route.params.id,
       data,
       formatDate,
       formatTime,

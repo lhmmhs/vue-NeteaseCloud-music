@@ -2,21 +2,38 @@
   <div class="comments">
     <div class="list" v-if="data.hotComments && data.hotComments.length">
       <h3 class="title">精彩评论</h3>
-      <comment :comments="data.hotComments" />
+      <comment
+        v-for="comment in data.hotComments"
+        :comment="comment"
+        :id="comment.commentId"
+        @like="commentLike(comment)"
+      />
     </div>
     <div class="list" v-if="data.comments && data.comments.length">
       <h3 class="title">最新评论（{{ commentsTotal }}）</h3>
-      <comment :comments="data.comments" />
+      <comment
+        v-for="comment in data.comments"
+        :comment="comment"
+        :id="comment.commentId"
+        @like="commentLike(comment)"
+      />
     </div>
   </div>
   <pager @currentPage="currentPageChange" :pageCount="Math.ceil(commentsTotal / 20)" :pagerCount="7" />
 </template>
 
 <script>
-import { inject, onMounted, reactive, ref } from "vue";
+import { computed, inject, onMounted, reactive, ref } from "vue";
 import pager from "@/components/pager";
 import comment from "@/components/comment";
-import { requestPlaylistComments, requestMvComments, requestMusicComments, requestAlbumComments } from "@/api";
+import {
+  requestPlaylistComments,
+  requestMvComments,
+  requestMusicComments,
+  requestAlbumComments,
+  requestCommentLike,
+} from "@/api";
+import { useStore } from "vuex";
 
 const MUSIC_TYPE = "music";
 const PLAYLIST_TYPE = "playlist";
@@ -27,13 +44,26 @@ export default {
   props: ["id", "type"],
   components: { pager, comment },
   setup(props) {
+    const store = useStore();
+
+    const status = computed(() => store.state.user.status);
+
     const commentRequestMap = {
       [PLAYLIST_TYPE]: requestPlaylistComments,
       [MUSIC_TYPE]: requestMusicComments,
       [MV_TYPE]: requestMvComments,
       [ALBUM_TYPE]: requestAlbumComments,
     };
+
+    const commentTypeMap = {
+      [PLAYLIST_TYPE]: 2,
+      [MUSIC_TYPE]: 0,
+      [MV_TYPE]: 1,
+      [ALBUM_TYPE]: 3,
+    };
+
     const commentRequest = commentRequestMap[props.type];
+    const commentType = commentTypeMap[props.type];
 
     const data = reactive({
       comments: [],
@@ -56,6 +86,16 @@ export default {
       };
     })(props.id);
 
+    const commentLike = async (comment) => {
+      if (!status.value) return;
+      let t = comment.liked ? 0 : 1;
+      const { code } = await requestCommentLike(props.id, comment.commentId, commentType, t);
+      if (code === 200) {
+        comment.liked ? --comment.likedCount : ++comment.likedCount;
+        comment.liked = !comment.liked;
+      }
+    };
+
     onMounted(() => {
       getComments(props.id, 1);
     });
@@ -64,6 +104,7 @@ export default {
       data,
       commentsTotal,
       currentPageChange,
+      commentLike,
     };
   },
 };

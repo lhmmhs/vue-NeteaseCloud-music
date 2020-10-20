@@ -6,7 +6,7 @@ export const requestUserDetail = (uid) => request.get(`/user/detail?uid=${uid}&t
 export const requestUserRecord = (uid) => request.get(`/user/record?uid=${uid}`);
 
 // 用户歌单
-export const requestUserPlaylist = (uid) => request.get(`/user/playlist?uid=${uid}`);
+export const requestUserPlaylist = (uid) => request.get(`/user/playlist?uid=${uid}&timestamp=${+new Date()}`);
 
 export const requestLoginCellphone = (phone, password) =>
   request.get(`/login/cellphone?phone=${phone}&password=${password}`);
@@ -22,3 +22,7 @@ export const requestFollow = (id, t) => request.post(`/follow?timestamp=${+new D
 
 // 用户关注列表
 export const requestUserFollows = (uid) => request.get(`/user/follows?uid=${uid}`);
+
+// 评论点赞
+export const requestCommentLike = (id, cid, type, t) =>
+  request.post(`/comment/like?timestamp=${+new Date()}`, { id, cid, type, t });

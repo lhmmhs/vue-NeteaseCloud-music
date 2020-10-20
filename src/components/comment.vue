@@ -1,5 +1,5 @@
 <template>
-  <div class="comment" v-for="comment in comments">
+  <div class="comment">
     <div class="avatar-wrap">
       <img :src="`${comment.user.avatarUrl}?param=40y40`" />
     </div>
@@ -9,13 +9,15 @@
         <span class="text">{{ comment.content }}</span>
       </p>
       <div class="replied" v-if="comment.beReplied.length">
-        <router-link :to="`/user/${comment.beReplied[0].user.userId}`" class="user-name">{{ comment.beReplied[0].user.nickname }}：</router-link>
+        <router-link :to="`/user/${comment.beReplied[0].user.userId}`" class="user-name">
+          {{ comment.beReplied[0].user.nickname }}：
+        </router-link>
         <span class="text">{{ comment.beReplied[0].content }}</span>
       </div>
       <div class="content-bar">
         <p class="create">{{ formatDate(comment.time) }}</p>
         <div class="actions">
-          <i class="iconfont icon-compoent icon-good"></i>
+          <i @click="clickHandler" class="iconfont icon-compoent icon-good" :class="{ liked: comment.liked }"></i>
           <span class="like-count">{{ comment.likedCount }}</span>
         </div>
       </div>
@@ -27,9 +29,14 @@
 import { formatDate } from "@/utils";
 
 export default {
-  props: ["comments"],
-  setup() {
-    return { formatDate };
+  props: ["comment"],
+  emits: ["like"],
+  setup(props, { emit }) {
+    const clickHandler = () => {
+      emit("like");
+    };
+
+    return { formatDate, clickHandler };
   },
 };
 </script>
@@ -79,4 +86,6 @@ export default {
   font-size: 12px
 .icon-compoent
   cursor: pointer
+.icon-good.liked
+  color: #d33a31
 </style>

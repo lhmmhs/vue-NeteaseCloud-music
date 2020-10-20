@@ -3,7 +3,7 @@ import { request } from "@/utils";
 export const requestPlaylistDetail = (id) => request.get(`/playlist/detail?id=${id}&timestamp=${+new Date()}`);
 
 export const requestPlaylistComments = (id, limit, page) =>
-  request.get(`/comment/playlist?id=${id}&limit=${limit}&offset=${limit * (page - 1)}`);
+  request.get(`/comment/playlist?id=${id}&limit=${limit}&offset=${limit * (page - 1)}&timestamp=${+new Date()}`);
 
 export const requestPlaylitCatlist = () => request.get("/playlist/catlist");
 
