@@ -26,3 +26,7 @@ export const requestUserFollows = (uid) => request.get(`/user/follows?uid=${uid}
 // 评论点赞
 export const requestCommentLike = (id, cid, type, t) =>
   request.post(`/comment/like?timestamp=${+new Date()}`, { id, cid, type, t });
+
+// 评论
+export const requestComment = (id, content, type, t) =>
+  request.post(`/comment?timestamp=${+new Date()}`, { id, content, type, t });

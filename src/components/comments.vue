@@ -1,5 +1,14 @@
 <template>
   <div class="comments">
+    <div class="comment-form">
+      <div class="textarea-wrap">
+        <textarea v-model="commentConten" class="textarea"></textarea>
+      </div>
+      <div class="comment-action">
+        <btn @click="comment">发送</btn>
+      </div>
+    </div>
+
     <div class="list" v-if="data.hotComments && data.hotComments.length">
       <h3 class="title">精彩评论</h3>
       <comment
@@ -32,6 +41,7 @@ import {
   requestMusicComments,
   requestAlbumComments,
   requestCommentLike,
+  requestComment,
 } from "@/api";
 import { useStore } from "vuex";
 
@@ -71,6 +81,7 @@ export default {
     });
 
     let commentsTotal = ref(0);
+    let commentConten = ref("");
 
     watch(
       () => props.id,
@@ -103,6 +114,20 @@ export default {
       }
     };
 
+    const comment = async () => {
+      if (!status.value) return;
+      if (commentConten.value.trim() === "") return;
+
+      const { code, comment } = await requestComment(props.id, commentConten.value, commentType, 1);
+      if (code === 200) {
+        commentConten.value = "";
+        comment.beReplied = [];
+        comment.liked = false;
+        comment.likedCount = 0;
+        data.comments.unshift(comment);
+      }
+    };
+
     onMounted(() => {
       getComments(props.id, 1);
     });
@@ -112,6 +137,8 @@ export default {
       commentsTotal,
       currentPageChange,
       commentLike,
+      comment,
+      commentConten,
     };
   },
 };
@@ -124,4 +151,23 @@ export default {
   margin: 40px 0 0 0
   padding-bottom: 15px
   border-bottom: 1px solid #eee
+.comment-form
+  padding: 20px
+  background: #f9f9f9
+.textarea
+  display: block
+  width: 100%
+  height: 100px
+  padding: 10px
+  border: 1px solid #cdcdcd
+  border-radius: 2px
+  resize: none
+  box-sizing: border-box
+  &:focus
+    outline: none
+.comment-action
+  margin-top: 10px
+  text-align: right
+  .button
+    margin-left: 10px
 </style>
