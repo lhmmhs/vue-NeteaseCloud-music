@@ -93,7 +93,7 @@ export default {
     // watch
     watch(currentSong, (newSong, prevSong) => {
       audio.value.currentTime = 0;
-      audio.value.play();
+      _play();
     });
 
     // evnet
@@ -137,7 +137,7 @@ export default {
       // 2.结束
       // 先播放音乐
       if (!playing.value) {
-        audio.value.play();
+        _play();
       }
       audio.value.currentTime = currentTime.value;
       store.commit("music/setCurrentTimeByMove", currentTime.value);
@@ -160,7 +160,7 @@ export default {
     }
 
     function errorHandler(e) {
-      console.log(e);
+      // 播放歌曲失败
     }
 
     function progressChange(e) {
@@ -172,7 +172,7 @@ export default {
       progressBarCurWidth.value = clacValue;
       calcCurrentTime(clacValue);
       if (!playing.value) {
-        audio.value.play();
+        _play();
       }
       audio.value.currentTime = currentTime.value;
     }
@@ -206,7 +206,7 @@ export default {
       if (playing.value) {
         pause();
       } else {
-        audio.value.play();
+        _play();
       }
     }
 
@@ -225,6 +225,14 @@ export default {
     function pause() {
       audio.value.pause();
     }
+
+    const _play = async () => {
+      try {
+        await audio.value.play();
+      } catch (error) {
+        // 播放歌曲失败
+      }
+    };
 
     function togglePlayerShow() {
       if (!currentSong.value.url) return;

@@ -13,7 +13,7 @@
             {{ artist.name }}
           </router-link>
         </div>
-        <div class="publish-time">发行时间：{{ formatDate(data.album.publishTime, "-") === "00:00" && "今天" }}</div>
+        <div class="publish-time">发行时间：{{ formatDate(data.album.publishTime, "-") }}</div>
         <div class="company">发行公司：{{ data.album.company || null }}</div>
       </div>
     </div>

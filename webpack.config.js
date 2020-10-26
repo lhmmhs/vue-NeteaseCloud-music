@@ -2,8 +2,6 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { VueLoaderPlugin } = require("vue-loader");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
-// const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
-// const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
 
 let filename = "[name].[chunkhash:8].js";
 
@@ -24,8 +22,7 @@ module.exports = {
         loader: "vue-loader",
       },
       {
-        test: /\.m?js$/,
-        exclude: /(node_modules|bower_components)/,
+        test: /\.js$/,
         loader: "babel-loader",
       },
       {
@@ -50,6 +47,27 @@ module.exports = {
 
     new VueLoaderPlugin(),
   ],
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/](@vue|vue-router|vuex)[\\/]/,
+          name: "vendor",
+          chunks: "all",
+        },
+        axios: {
+          test: /[\\/]node_modules[\\/](axios)[\\/]/,
+          name: "axios",
+          chunks: "all",
+        },
+        betterScroll: {
+          test: /[\\/]node_modules[\\/](@better-scroll)[\\/]/,
+          name: "better-scroll",
+          chunks: "async",
+        },
+      },
+    },
+  },
   resolve: {
     extensions: [".js", ".vue"],
     alias: {

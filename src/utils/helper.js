@@ -29,6 +29,8 @@ export function formatPlayCount(count) {
 }
 
 export function formatDate(s, type) {
+  if (!s) return;
+
   let date = new Date(s);
   let time = new Date().getTime() - date.getTime();
 
@@ -39,13 +41,13 @@ export function formatDate(s, type) {
   let hours = date.getHours();
   let minutes = date.getMinutes();
 
+  if (type && type === "-") {
+    return addZero(years) + type + addZero(months) + type + addZero(day);
+  }
+
   if (time / 3600000 < 24) {
     return addZero(hours) + ":" + addZero(minutes);
   } else {
-    if (type && type === "-") {
-      return addZero(years) + type + addZero(months) + type + addZero(day);
-    }
-
     return addZero(years) + "年" + addZero(months) + "月" + addZero(day) + "日";
   }
 }

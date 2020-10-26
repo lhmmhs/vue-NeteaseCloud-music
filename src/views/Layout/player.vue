@@ -18,13 +18,15 @@
               </router-link>
             </span>
           </div>
-          <scroller v-if="data.lyric.length" class="lyric" @init="initHandler" :data="data.lyric">
-            <ul class="lrcs">
-              <li class="lrc" v-for="(item, index) in data.lyric" :ref="setItemRef" :class="getLyricActive(index)">
-                <p class="lrc-txt" v-for="content in item.contents">{{ content }}</p>
-              </li>
-            </ul>
-          </scroller>
+          <template v-if="data.lyric.length">
+            <scroller class="lyric" @init="initHandler" :data="data.lyric">
+              <ul class="lrcs">
+                <li class="lrc" v-for="(item, index) in data.lyric" :ref="setItemRef" :class="getLyricActive(index)">
+                  <p class="lrc-txt" v-for="content in item.contents">{{ content }}</p>
+                </li>
+              </ul>
+            </scroller>
+          </template>
           <div class="empty" v-else>暂无歌词</div>
         </div>
       </div>
@@ -38,10 +40,13 @@ import { ref, computed, watch, onMounted, reactive, nextTick } from "vue";
 import { useStore } from "vuex";
 import { formatTime } from "@/utils";
 import comments from "@/components/comments";
-import scroller from "@/components/scroller";
+// import scroller from "@/components/scroller";
 import { lyricParser, mergeLrcTlyric } from "@/utils";
 import { useRoute } from "vue-router";
 import { requestLyric } from "@/api";
+import { defineAsyncComponent } from "vue";
+
+const scroller = defineAsyncComponent(() => import("@/components/scroller"));
 
 export default {
   components: { comments, scroller },
