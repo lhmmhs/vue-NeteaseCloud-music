@@ -89,11 +89,7 @@ export default {
       // 每次打开歌词界面，清空旧的dom引用
       // 因为每次打开都需要重新渲染
       itemRefs = [];
-
-      nextTick(() => {
-        // 防止新旧activeLyricIndex相同，不会滚动到指定位置
-        scrollToActiveLyric();
-      });
+      poll(scrollToActiveLyric);
     });
 
     watch(
@@ -109,6 +105,16 @@ export default {
         scrollToActiveLyric();
       }
     });
+
+    function poll(cb) {
+      if (itemRefs.length) {
+        cb();
+      } else {
+        setTimeout(() => {
+          poll(cb);
+        }, 16);
+      }
+    }
 
     function scrollToActiveLyric() {
       if (activeLyricIndex.value !== -1) {
