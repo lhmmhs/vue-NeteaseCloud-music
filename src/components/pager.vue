@@ -1,31 +1,41 @@
 <template>
   <ul class="pager" @click="onPagerClick">
-    <li :class="{ active: data.currentPage === 1 }" v-if="pageCount > 0" class="number">1</li>
+    <li :class="{ active: currentPage === 1 }" v-if="pageCount > 0" class="number">1</li>
     <li class="more btn-quickprev" v-if="data.showPrevMore">...</li>
-    <li v-for="pager in pagers" :key="pager" :class="{ active: data.currentPage === pager }" class="number">
+    <li v-for="pager in pagers" :key="pager" :class="{ active: currentPage === pager }" class="number">
       {{ pager }}
     </li>
     <li class="more btn-quicknext" v-if="data.showNextMore">...</li>
-    <li :class="{ active: data.currentPage === pageCount }" class="number" v-if="pageCount > 1">
+    <li :class="{ active: currentPage === pageCount }" class="number" v-if="pageCount > 1">
       {{ pageCount }}
     </li>
   </ul>
 </template>
 
 <script>
-import { reactive, ref, nextTick, computed, watch } from "vue";
+import { reactive, ref, nextTick, computed } from "vue";
 
 export default {
   props: {
     // 总页数
     pageCount: Number,
     pagerCount: Number,
+    currentPage: {
+      type: Number,
+      default: 1,
+    },
   },
+  emits: ["current-page"],
   setup(props, { emit }) {
     const data = reactive({
       showPrevMore: false,
       showNextMore: false,
-      currentPage: 1,
+    });
+
+    const test = computed(() => {
+      console.log("Test");
+
+      return props.currentPage + 1;
     });
 
     // computed
@@ -34,7 +44,7 @@ export default {
 
       // 一半的显示页码数量 7 -> 3
       const halfPagerCount = (pagerCount - 1) / 2;
-      const currentPage = Number(data.currentPage);
+      const currentPage = Number(props.currentPage);
       const pageCount = Number(props.pageCount);
 
       // 省略号标记
@@ -96,7 +106,7 @@ export default {
 
       let newPage = Number(event.target.textContent);
       const pageCount = props.pageCount;
-      const currentPage = data.currentPage;
+      const currentPage = props.currentPage;
       const pagerCountOffset = props.pagerCount - 2;
 
       // 点击省略号
@@ -118,21 +128,9 @@ export default {
       }
 
       if (newPage !== currentPage) {
-        data.currentPage = newPage;
+        emit("current-page", newPage);
       }
     }
-
-    const changeCurrentPage = (page) => {
-      data.currentPage = page;
-    };
-
-    // watch
-    watch(
-      () => data.currentPage,
-      (page) => {
-        emit("currentPage", page);
-      }
-    );
 
     return {
       data,
@@ -140,7 +138,6 @@ export default {
       pagers,
 
       onPagerClick,
-      changeCurrentPage,
     };
   },
 };

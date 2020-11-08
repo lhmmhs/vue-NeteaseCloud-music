@@ -29,13 +29,18 @@
       />
     </div>
 
-    <pager ref="pager" @currentPage="currentPageChange" :pageCount="Math.ceil(mvsTotal / 50)" :pagerCount="7" />
+    <pager
+      :currentPage="currentPage"
+      @current-page="currentPageHandler"
+      :page-count="Math.ceil(mvsTotal / 50)"
+      :pager-count="7"
+    />
   </div>
 </template>
 
 <script>
 import { requestMvAll } from "@/api";
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import mvCard from "@/components/mv-card";
 import pager from "@/components/pager";
 import { getArtists, formatPlayCount } from "@/utils";
@@ -62,6 +67,7 @@ export default {
 
     const mvsTotal = ref(0);
     const pager = ref(null);
+    const currentPage = ref(1);
 
     const getMvAll = async (page) => {
       const { data: mvs, count } = await requestMvAll(
@@ -81,26 +87,27 @@ export default {
       let index = e.target.dataset.index;
       let type = e.target.dataset.type;
       data[`${type}ActiveIndex`] = Number(index);
-      pager.value.changeCurrentPage(1);
-      getMvAll(1);
+      currentPageHandler(1);
     };
 
-    const currentPageChange = (page) => {
+    const currentPageHandler = (page) => {
+      currentPage.value = page;
       getMvAll(page);
     };
 
     onMounted(() => {
-      getMvAll(1);
+      getMvAll(currentPage.value);
     });
 
     return {
       data,
       mvsTotal,
       pager,
+      currentPage,
 
       tagsMap,
 
-      currentPageChange,
+      currentPageHandler,
       toggleTags,
       getArtists,
       formatPlayCount,

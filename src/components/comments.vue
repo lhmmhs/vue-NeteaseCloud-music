@@ -28,7 +28,12 @@
       />
     </div>
   </div>
-  <pager @currentPage="currentPageChange" :pageCount="Math.ceil(commentsTotal / 20)" :pagerCount="7" />
+  <pager
+    :currentPage="currentPage"
+    @current-page="currentPageHandler"
+    :pageCount="Math.ceil(commentsTotal / 20)"
+    :pagerCount="7"
+  />
 </template>
 
 <script>
@@ -70,6 +75,8 @@ export default {
   setup(props) {
     const store = useStore();
 
+    const currentPage = ref(1);
+
     const status = computed(() => store.state.user.status);
 
     const commentRequest = commentRequestMap[props.type];
@@ -86,6 +93,7 @@ export default {
     watch(
       () => props.id,
       (id) => {
+        currentPage.value = 1;
         getComments(id, 1);
       }
     );
@@ -98,11 +106,10 @@ export default {
       commentsTotal.value = total;
     };
 
-    const currentPageChange = ((id) => {
-      return function (page) {
-        getComments(id, page);
-      };
-    })(props.id);
+    const currentPageHandler = (page) => {
+      currentPage.value = page;
+      getComments(props.id, page);
+    };
 
     const commentLike = async (comment) => {
       if (!status.value) return;
@@ -129,13 +136,14 @@ export default {
     };
 
     onMounted(() => {
-      getComments(props.id, 1);
+      getComments(props.id, currentPage.value);
     });
 
     return {
       data,
       commentsTotal,
-      currentPageChange,
+      currentPage,
+      currentPageHandler,
       commentLike,
       comment,
       commentConten,

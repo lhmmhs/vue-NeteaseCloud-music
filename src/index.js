@@ -10,7 +10,9 @@ const app = createApp({
   render: () => h(App),
 });
 
-app.use(lazyLoad);
+app.use(lazyLoad, {
+  observer: true,
+});
 
 app.component("btn", btn);
 

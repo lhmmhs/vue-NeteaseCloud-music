@@ -1,4 +1,15 @@
-import { inBrowser, remove, find, _, throttle, supportWebp, getDPR, hasIntersectionObserver, modeType } from "./util";
+import {
+  inBrowser,
+  remove,
+  find,
+  _,
+  throttle,
+  supportWebp,
+  scrollParent,
+  getDPR,
+  hasIntersectionObserver,
+  modeType,
+} from "./util";
 
 import ReactiveListener from "./listener";
 const DEFAULT_EVENTS = ["scroll", "wheel", "mousewheel", "resize", "animationend", "transitionend", "touchmove"];
@@ -42,17 +53,10 @@ export default function (app) {
         filter: filter || {},
         adapter: adapter || {},
         observer: !!observer,
-        // observerOptions: observerOptions || DEFAULT_OBSERVER_OPTIONS,
       };
       this.lazyLoadHandler = throttle(this._lazyLoadHandler.bind(this), this.options.throttleWait);
 
       this.setMode(this.options.observer ? modeType.observer : modeType.event);
-    }
-
-    init() {
-      if (inBrowser) {
-        this._addListenerTarget(window);
-      }
     }
 
     /*
@@ -76,7 +80,40 @@ export default function (app) {
         options: this.options,
       });
 
+      const $parent = scrollParent(el);
+
+      if (inBrowser) {
+        this._addListenerTarget(window);
+        this._addListenerTarget($parent);
+      }
+
       this.ListenerQueue.push(newListener);
+      this.lazyLoadHandler();
+    }
+
+    /**
+     * update image src
+     * @param  {DOM} el
+     * @param  {object} vue directive binding
+     * @return
+     */
+    update(el, binding, vnode) {
+      let { src, loading, error } = this._valueFormatter(binding.value);
+
+      const exist = find(this.ListenerQueue, (item) => item.el === el);
+      if (!exist) {
+        this.add(el, binding, vnode);
+      } else {
+        exist.update({
+          src,
+          loading,
+          error,
+        });
+      }
+      if (this._observer) {
+        this._observer.unobserve(el);
+        this._observer.observe(el);
+      }
       this.lazyLoadHandler();
     }
 
@@ -91,6 +128,7 @@ export default function (app) {
       const existItem = find(this.ListenerQueue, (item) => item.el === el);
       if (existItem) {
         this._removeListenerTarget(window);
+        this._removeListenerTarget(existItem.$parent);
         remove(this.ListenerQueue, existItem);
         existItem.$destroy();
       }
@@ -103,21 +141,7 @@ export default function (app) {
 
       this.mode = mode; // event or observer
 
-      if (mode === modeType.event) {
-        if (this._observer) {
-          this.ListenerQueue.forEach((listener) => {
-            this._observer.unobserve(listener.el);
-          });
-          this._observer = null;
-        }
-
-        this.TargetQueue.forEach((target) => {
-          this._initListen(target.el, true);
-        });
-      } else {
-        this.TargetQueue.forEach((target) => {
-          this._initListen(target.el, false);
-        });
+      if (mode === modeType.observer) {
         this._initIntersectionObserver();
       }
     }
@@ -196,6 +220,7 @@ export default function (app) {
         item.$destroy();
       });
     }
+
     /**
      * init IntersectionObserver
      * set mode to observer
@@ -203,12 +228,12 @@ export default function (app) {
      */
     _initIntersectionObserver() {
       if (!hasIntersectionObserver) return;
-      this._observer = new IntersectionObserver(this._observerHandler.bind(this), this.options.observerOptions);
-      if (this.ListenerQueue.length) {
-        this.ListenerQueue.forEach((listener) => {
-          this._observer.observe(listener.el);
-        });
-      }
+      this._observer = new IntersectionObserver(this._observerHandler.bind(this));
+      // if (this.ListenerQueue.length) {
+      //   this.ListenerQueue.forEach((listener) => {
+      //     this._observer.observe(listener.el);
+      //   });
+      // }
     }
 
     /**
@@ -220,7 +245,9 @@ export default function (app) {
         if (entry.isIntersecting) {
           this.ListenerQueue.forEach((listener) => {
             if (listener.el === entry.target) {
-              if (listener.state.loaded) return this._observer.unobserve(listener.el);
+              if (listener.state.loaded) {
+                return this._observer.unobserve(listener.el);
+              }
               listener.load();
             }
           });
@@ -252,8 +279,8 @@ export default function (app) {
           break;
       }
 
+      listener.state.loaded = true;
       el.setAttribute("src", src);
-      el.setAttribute("lazy", state);
     }
 
     /**

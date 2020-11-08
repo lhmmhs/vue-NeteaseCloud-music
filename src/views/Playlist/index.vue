@@ -18,7 +18,13 @@
         :playCount="formatPlayCount(item.playCount)"
       />
     </div>
-    <pager ref="pager" @currentPage="currentPageChange" :pageCount="Math.ceil(playlistTotal / 50)" :pagerCount="7" />
+
+    <pager
+      :currentPage="currentPage"
+      @current-page="currentPageHandler"
+      :pageCount="Math.ceil(playlistTotal / 20)"
+      :pagerCount="7"
+    />
   </div>
 </template>
 
@@ -38,6 +44,7 @@ export default {
     });
 
     const playlistTotal = ref(0);
+    const currentPage = ref(1);
     const category = ref("全部");
 
     const pager = ref(null);
@@ -66,29 +73,28 @@ export default {
     const toggleTag = (e) => {
       if (e.target.tagName !== "LI") return;
       let cat = e.target.innerText;
-      
-      pager.value.changeCurrentPage(1);
       category.value = cat;
-      getTopPlaylist(1);
+      currentPageHandler(1);
     };
 
-    const currentPageChange = (currentPage) => {
-      getTopPlaylist(currentPage);
+    const currentPageHandler = (page) => {
+      currentPage.value = page;
+      getTopPlaylist(page);
     };
 
     onMounted(() => {
       getPlaylistCatlist();
-      getTopPlaylist(1);
+      getTopPlaylist(currentPage.value);
     });
 
     return {
       data,
       playlistTotal,
-      pager,
+      currentPage,
       category,
 
       toggleTag,
-      currentPageChange,
+      currentPageHandler,
 
       formatPlayCount,
     };

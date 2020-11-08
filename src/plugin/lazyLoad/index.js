@@ -11,8 +11,8 @@ export default {
     const lazy = new LazyClass(options);
 
     app.directive("lazy", {
-      beforeMount: lazy.init.bind(lazy),
       mounted: lazy.add.bind(lazy),
+      updated: lazy.update.bind(lazy),
       unmounted: lazy.remove.bind(lazy),
     });
   },

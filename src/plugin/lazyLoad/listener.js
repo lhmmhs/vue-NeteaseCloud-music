@@ -37,6 +37,24 @@ export default class ReactiveListener {
   }
 
   /*
+   * update image listener data
+   * @param  {String} image uri
+   * @param  {String} loading image uri
+   * @param  {String} error image uri
+   * @return
+   */
+  update({ src, loading, error }) {
+    const oldSrc = this.src;
+    this.src = src;
+    this.loading = loading;
+    this.error = error;
+    if (oldSrc !== this.src) {
+      this.attempt = 0;
+      this.initState();
+    }
+  }
+
+  /*
    * get el node rect
    * @return
    */
