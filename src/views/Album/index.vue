@@ -2,7 +2,7 @@
   <div class="album">
     <div class="album-detail">
       <div class="album-img-wrap">
-        <img class="album-img" v-if="data.album.picUrl" :src="`${data.album.picUrl}?param=170y170`" />
+        <img class="album-img" v-if="data.album.picUrl" v-lazy="`${data.album.picUrl}?param=170y170`" />
         <div class="album-img-loading" v-else />
       </div>
       <div class="album-content">
@@ -24,7 +24,7 @@
         <song-table-column width="6%">
           <template v-slot:default="slotProps">
             <div class="img-wrap">
-              <img class="al-img" :src="`${slotProps.song.al.picUrl}?param=40y40`" />
+              <img class="al-img" v-lazy="`${slotProps.song.al.picUrl}?param=40y40`" />
               <div class="icon-play-wrap">
                 <i class="iconfont icon-play"></i>
               </div>
@@ -172,4 +172,12 @@ export default {
   border-bottom: 1px solid #eee
 .ar
   margin-right: 10px
+.mv-tag
+  display: inline-block
+  margin-left: 8px
+  padding: 2px
+  border: 1px solid
+  color: #d33a31
+  cursor: pointer
+  font-size: 12px
 </style>

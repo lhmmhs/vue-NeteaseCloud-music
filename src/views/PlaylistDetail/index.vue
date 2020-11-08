@@ -2,12 +2,12 @@
   <div class="playlist">
     <div class="detail" v-if="data.playlistDetail.coverImgUrl">
       <div class="img-wrap">
-        <img :src="`${data.playlistDetail.coverImgUrl}?param=200y200`" />
+        <img v-lazy="`${data.playlistDetail.coverImgUrl}?param=200y200`" />
       </div>
       <div class="content">
         <h2 class="title">{{ data.playlistDetail.name }}</h2>
         <div class="creator">
-          <img class="creator__avatar" :src="`${data.playlistDetail.creator.avatarUrl}?param=40y40`" />
+          <img class="creator__avatar" v-lazy="`${data.playlistDetail.creator.avatarUrl}?param=40y40`" />
           <router-link :to="`/user/${data.playlistDetail.creator.userId}`" class="creator__name">
             {{ data.playlistDetail.creator.nickname }}
           </router-link>

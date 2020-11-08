@@ -1,7 +1,7 @@
 <template>
   <div class="comment">
     <div class="avatar-wrap">
-      <img :src="`${comment.user.avatarUrl}?param=40y40`" />
+      <img v-lazy="`${comment.user.avatarUrl}?param=40y40`" />
     </div>
     <div class="content">
       <p class="comment-content">

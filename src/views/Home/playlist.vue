@@ -1,7 +1,7 @@
 <template>
   <div class="playlist">
     <h3>推荐歌单</h3>
-    <div class="list">
+    <div class="list" v-if="playlist.length">
       <playlist-card
         v-for="item in playlist"
         :key="item.id"

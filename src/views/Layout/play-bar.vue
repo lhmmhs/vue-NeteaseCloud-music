@@ -48,12 +48,12 @@
       ref="audio"
       class="audio"
       :src="currentSong.url"
-      @canplay.native="canplayHandler"
-      @timeupdate.native="timeUpdateHandler"
-      @ended.native="endHandler"
-      @pause.native="pauseHandler"
-      @play.native="playHandler"
-      @error.native="errorHandler"
+      @canplay="canplayHandler"
+      @timeupdate="timeUpdateHandler"
+      @ended="endHandler"
+      @pause="pauseHandler"
+      @play="playHandler"
+      @error="errorHandler"
     />
   </div>
 </template>

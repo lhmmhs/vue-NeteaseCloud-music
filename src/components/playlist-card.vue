@@ -2,7 +2,7 @@
   <div class="playlist-card">
     <div class="img-wrap">
       <router-link class="palylist-link" :to="`/playlist/${id}`">
-        <img class="playlist-img" :src="`${picUrl}?param=300y300`" />
+        <img class="playlist-img" v-lazy="`${picUrl}?param=300y300`" />
       </router-link>
       <div class="play-count">{{ playCount }}</div>
     </div>

@@ -6,7 +6,7 @@
       <song-table-column prop="picUrl" width="80px">
         <template v-slot:default="slotProps">
           <div class="img-wrap">
-            <img class="song-img" :src="`${slotProps.song.picUrl}?param=40y40`" />
+            <img class="song-img" v-lazy="`${slotProps.song.picUrl}?param=40y40`" />
             <div class="icon-play-wrap">
               <i class="iconfont icon-play"></i>
             </div>

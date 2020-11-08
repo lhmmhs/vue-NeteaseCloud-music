@@ -3,7 +3,7 @@
     <div class="img-wrap">
       <div class="play-count">{{ playCount }}</div>
       <router-link class="mv-link" :to="`/mv/${id}`">
-        <img class="mv-img" :src="`${picUrl}?param=500y260`" />
+        <img class="mv-img" v-lazy="`${picUrl}?param=500y260`" />
       </router-link>
     </div>
     <div class="mv-content">
@@ -41,16 +41,16 @@ export default {
   overflow: hidden
   border-radius: 5px
   cursor: pointer
-  padding 26% 0
+  padding: 26% 0
   &:hover
     .play-icon-wrap
       display: flex
 .mv-link
-  position absolute
-  left 0
-  right 0
-  bottom 0
-  top 0
+  position: absolute
+  left: 0
+  right: 0
+  bottom: 0
+  top: 0
 .play-icon-wrap
   position: absolute
   left: 0

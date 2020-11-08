@@ -20,7 +20,7 @@
       <div class="artist-card" v-for="artist in data.artists">
         <div class="img-wrap">
           <router-link :to="`/artist/${artist.id}`">
-            <img class="artist-img" :src="`${artist.picUrl}?param=170y170`" />
+            <img class="artist-img" v-lazy="`${artist.picUrl}?param=170y170`" />
           </router-link>
         </div>
         <div class="artist-name">
@@ -153,12 +153,13 @@ export default {
   margin-bottom: 16px
   font-size: 0
 .img-wrap
-  display inline-block
+  display: inline-block
+  width: 170px
+  height: 170px
 .artist-img
-  width 100%
-  box-shadow 1px 1px 4px #ccc
-  border 1px solid #000
+  width: 100%
+  box-shadow: 1px 1px 4px #ccc
 .artist-name
-  margin-top 4px
-  font-size 14px
+  margin-top: 4px
+  font-size: 14px
 </style>

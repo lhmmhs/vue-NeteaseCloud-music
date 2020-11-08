@@ -4,10 +4,13 @@ import router from "@/router";
 import store from "@/store";
 import "@/style/reset.stylus";
 import btn from "@/components/button";
+import lazyLoad from "@/plugin/lazyLoad";
 
 const app = createApp({
   render: () => h(App),
 });
+
+app.use(lazyLoad);
 
 app.component("btn", btn);
 

@@ -2,7 +2,7 @@
   <div class="song-card">
     <div class="order">{{ order + 1 > 9 ? order + 1 : "0" + (order + 1) }}</div>
     <div class="img-wrap" @click="onClick">
-      <img :src="`${picUrl}?param=60y60`" />
+      <img v-lazy="`${picUrl}?param=60y60`" />
       <div class="play-icon-wrap">
         <i class="play-icon iconfont icon-play"></i>
       </div>
@@ -10,9 +10,9 @@
     <div class="song-content">
       <p :title="name" class="song-name">{{ name }}</p>
       <p class="artists">
-        <router-link class="artist" v-for="artist in artists" :to="`/artist/${artist.id}`">{{
-          artist.name
-        }}</router-link>
+        <router-link class="artist" v-for="artist in artists" :to="`/artist/${artist.id}`">
+          {{ artist.name }}
+        </router-link>
       </p>
     </div>
   </div>

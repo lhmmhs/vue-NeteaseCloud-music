@@ -8,7 +8,7 @@
         </span>
       </div>
       <div class="artist-img-wrap">
-        <img class="artist-img" v-if="data.artist.picUrl" :src="`${data.artist.picUrl}?param=640y300`" />
+        <img class="artist-img" v-if="data.artist.picUrl" v-lazy="`${data.artist.picUrl}?param=640y300`" />
       </div>
     </div>
     <div class="tabs" @click="toggleTabBar">
@@ -23,7 +23,7 @@
         <song-table-column width="10%">
           <template v-slot:default="slotProps">
             <div class="img-wrap">
-              <img class="al-img" :src="`${slotProps.song.al.picUrl}?param=40y40`" />
+              <img class="al-img" v-lazy="`${slotProps.song.al.picUrl}?param=40y40`" />
               <div class="icon-play-wrap">
                 <i class="iconfont icon-play"></i>
               </div>
@@ -49,7 +49,7 @@
       <div class="album-card" v-for="album in data.albums">
         <div class="album-img-wrap">
           <router-link :to="`/album/${album.id}`">
-            <img class="album-img" :src="`${album.picUrl}?param=150y150`" />
+            <img class="album-img" v-lazy="`${album.picUrl}?param=150y150`" />
           </router-link>
           <div class="dish"></div>
         </div>
@@ -161,8 +161,6 @@ export default {
       if (e.target.tagName !== "SPAN") return;
       activeIndex.value = e.target.dataset.key;
     };
-
-    
 
     onMounted(() => {
       getArtists(route.params.id);
