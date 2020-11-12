@@ -33,7 +33,7 @@ import debounce from "lodash/debounce";
 import { requestSearchSuggest, requestSongDetail } from "@/api";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { songUrl } from "@/utils";
+import { nomalizeSong } from "@/utils";
 
 const resultMap = {
   albums: "专辑",
@@ -76,16 +76,8 @@ export default {
         const { id, name, mvid, artists, duration, album } = content;
         const { songs } = await requestSongDetail(id);
         const { al } = songs[0];
-        const song = {
-          id,
-          name,
-          picUrl: al.picUrl,
-          artists,
-          duration,
-          album,
-          url: songUrl(id),
-          mvid,
-        };
+        const song = nomalizeSong(id, name, al.picUrl, artists, duration, album, mvid);
+
         store.dispatch("music/playSong", song);
       } else {
         router.push(`/${key.slice(0, key.length - 1)}/${content.id}`);

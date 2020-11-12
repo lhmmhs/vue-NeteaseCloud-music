@@ -1,11 +1,11 @@
 <template>
   <div class="play-bar">
     <div class="controls">
-      <span @click="prev" class="icon-warp"><i class="iconfont icon-prev"></i></span>
-      <span @click="play" class="icon-warp">
+      <span @click="prev" class="icon-wrap"><i class="iconfont icon-prev"></i></span>
+      <span @click="play" class="icon-wrap">
         <i class="iconfont" :class="[playing ? 'icon-pause' : 'icon-play']"></i>
       </span>
-      <span @click="next" class="icon-warp"><i class="iconfont icon-next"></i></span>
+      <span @click="next" class="icon-wrap"><i class="iconfont icon-next"></i></span>
     </div>
     <div class="song-progress">
       <div class="song">
@@ -323,7 +323,7 @@ export default {
   cursor: pointer
   font-size: 22px
   color: #fff
-.icon-warp:nth-child(2)
+.icon-wrap:nth-child(2)
   cursor: pointer
   display: flex
   justify-content: center

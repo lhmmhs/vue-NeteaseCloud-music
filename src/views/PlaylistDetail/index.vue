@@ -18,14 +18,14 @@
         </div>
         <!-- <div class="description">{{description}}</div> -->
         <div class="actions">
-          <btn class="btn" @click="">播放全部</btn>
+          <btn class="btn" @click="playSong">播放全部</btn>
           <btn class="btn" :disabled="profile.userId === data.playlistDetail.userId" @click="subscribe">
             {{ data.playlistDetail.subscribed ? "取消收藏" : "收藏" }}
           </btn>
         </div>
       </div>
     </div>
-    <song-table :songs="data.playlistDetail.tracks" />
+    <song-table :songs="data.songs" />
     <comments :id="$route.params.id" :type="'playlist'" />
   </div>
 </template>
@@ -34,7 +34,7 @@
 import { onMounted, computed, ref, provide, reactive, watch } from "vue";
 import { useRoute } from "vue-router";
 import { requestPlaylistDetail, requestPlaylistSubscribe } from "@/api";
-import { formatDate } from "@/utils";
+import { formatDate, nomalizeSong } from "@/utils";
 
 import songTable from "./song-table";
 import comments from "@/components/comments";
@@ -58,11 +58,15 @@ export default {
 
     const data = reactive({
       playlistDetail: {},
+      songs: [],
     });
 
     const getPlaylistDetail = async (id) => {
       const { playlist } = await requestPlaylistDetail(id);
       data.playlistDetail = playlist;
+      data.songs = playlist.tracks.map(({ al, ar, dt, id, name, mv }) =>
+        nomalizeSong(id, name, al.picUrl, ar, dt, al, mv)
+      );
     };
 
     const subscribe = async () => {
@@ -76,6 +80,15 @@ export default {
       }
     };
 
+    const playSong = async () => {
+      let songs = data.songs;
+      let i = data.songs.length - 1;
+      for (; i > 0; i--) {
+        store.commit("music/setPlaylist", songs[i]);
+      }
+      store.dispatch("music/playSong", songs[0]);
+    };
+
     onMounted(() => {
       getPlaylistDetail(route.params.id);
     });
@@ -85,6 +98,7 @@ export default {
       formatDate,
       subscribe,
       profile,
+      playSong,
     };
   },
 };

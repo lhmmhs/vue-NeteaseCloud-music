@@ -55,7 +55,7 @@
 import { requestAlbum } from "@/api";
 import { useRoute } from "vue-router";
 import { onMounted, reactive, watch } from "vue";
-import { formatDate, formatTime, songUrl } from "@/utils";
+import { formatDate, formatTime, nomalizeSong } from "@/utils";
 import songTable from "@/components/song-table/table";
 import songTableColumn from "@/components/song-table/table-column";
 import comments from "@/components/comments";
@@ -87,17 +87,7 @@ export default {
 
     const playSong = (rawSong) => {
       const { al, ar, dt, id, name, mv } = rawSong;
-
-      const song = {
-        id,
-        name,
-        picUrl: al.picUrl,
-        album: al,
-        duration: dt,
-        artists: ar,
-        url: songUrl(id),
-        mvid: mv,
-      };
+      const song = nomalizeSong(id, name, al.picUrl, ar, dt, al, mv);
 
       store.dispatch("music/playSong", song);
     };

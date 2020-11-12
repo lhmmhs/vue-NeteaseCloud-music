@@ -76,7 +76,7 @@ import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 import { requestArtists, requestArtistAlbum, requestArtistMv } from "@/api";
 import { onMounted, reactive, watch, ref, nextTick } from "vue";
-import { formatTime, formatPlayCount, songUrl, formatDate } from "@/utils";
+import { formatTime, formatPlayCount, nomalizeSong, formatDate } from "@/utils";
 import songTable from "@/components/song-table/table";
 import songTableColumn from "@/components/song-table/table-column";
 import mvCard from "@/components/mv-card";
@@ -142,17 +142,7 @@ export default {
 
     const playSong = (rawSong) => {
       const { al, ar, dt, id, name, mv } = rawSong;
-
-      const song = {
-        id,
-        name,
-        picUrl: al.picUrl,
-        album: al,
-        duration: dt,
-        artists: ar,
-        url: songUrl(id),
-        mvid: mv,
-      };
+      const song = nomalizeSong(id, name, al.picUrl, ar, dt, al, mv);
 
       store.dispatch("music/playSong", song);
     };

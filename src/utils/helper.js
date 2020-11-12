@@ -1,14 +1,13 @@
-export function nomalizeSong(data) {
-  let {
-    name,
-    picUrl,
-    song: { artists },
-  } = data;
-
+export function nomalizeSong(id, name, picUrl, artists, duration, album, mvid) {
   return {
+    id,
     name,
     picUrl,
-    artists: getArtists(artists),
+    artists,
+    duration,
+    album,
+    url: songUrl(id),
+    mvid,
   };
 }
 
@@ -42,24 +41,24 @@ export function formatDate(s, type) {
   let minutes = date.getMinutes();
 
   if (type && type === "-") {
-    return addZero(years) + type + addZero(months) + type + addZero(day);
+    return zero(years) + type + zero(months) + type + zero(day);
   }
 
   if (time / 3600000 < 24) {
-    return addZero(hours) + ":" + addZero(minutes);
+    return zero(hours) + ":" + zero(minutes);
   } else {
-    return addZero(years) + "年" + addZero(months) + "月" + addZero(day) + "日";
+    return zero(years) + "年" + zero(months) + "月" + zero(day) + "日";
   }
 }
 
-function addZero(n) {
+function zero(n) {
   return n < 10 ? "0" + n : n + "";
 }
 
 export function formatTime(duration) {
   let minutes = Math.floor(duration / 1000 / 60);
   let seconds = Math.floor(duration / 1000) % 60;
-  return addZero(minutes) + ":" + addZero(seconds);
+  return zero(minutes) + ":" + zero(seconds);
 }
 
 export function songUrl(id) {

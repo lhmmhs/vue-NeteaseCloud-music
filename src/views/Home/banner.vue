@@ -11,7 +11,7 @@ import { reactive, ref, onMounted } from "vue";
 import { requestBanner, requestSongDetail } from "@/api";
 import carousel from "@/components/carousel/main";
 import carouselItem from "@/components/carousel/item";
-import { songUrl } from "@/utils";
+import { nomalizeSong } from "@/utils";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
@@ -35,16 +35,7 @@ export default {
       if (banner.targetType === 1) {
         const { songs } = await requestSongDetail(banner.targetId);
         const { al, ar, name, mv, dt } = songs[0];
-        const song = {
-          id: banner.targetId,
-          name,
-          picUrl: al.picUrl,
-          album: al,
-          duration: dt,
-          artists: ar,
-          url: songUrl(banner.targetId),
-          mvid: mv,
-        };
+        const song = nomalizeSong(banner.targetId, name, al.picUrl, ar, dt, al, mv);
 
         store.dispatch("music/playSong", song);
       } else if (banner.targetType === 10) {

@@ -1,7 +1,7 @@
 <template>
   <div class="song-list">
     <h3>歌曲表单</h3>
-    <song-table :tableData="nomalizeSongs" @row-dblclick="playSong">
+    <song-table :tableData="songs" @row-dblclick="playSong">
       <song-table-column type="index" width="40px" />
       <song-table-column prop="picUrl" width="80px">
         <template v-slot:default="slotProps">
@@ -38,7 +38,7 @@
 
 <script>
 import { watch, ref } from "vue";
-import { formatTime, getArtists, songUrl } from "@/utils";
+import { formatTime } from "@/utils";
 import { useStore } from "vuex";
 import songTable from "@/components/song-table/table";
 import songTableColumn from "@/components/song-table/table-column";
@@ -54,38 +54,13 @@ export default {
   setup(props) {
     const store = useStore();
 
-    let nomalizeSongs = ref([]);
-
-    const nomalize = (rawSong) => {
-      const { al, ar, dt, id, name, mv } = rawSong;
-      return {
-        id,
-        name,
-        picUrl: al.picUrl,
-        album: al,
-        duration: dt,
-        artists: ar,
-        url: songUrl(id),
-        mvid: mv,
-      };
-    };
-
     function playSong(song) {
       store.dispatch("music/playSong", song);
     }
 
-    watch(
-      () => props.songs,
-      (songs) => {
-        nomalizeSongs.value = songs.map((song) => nomalize(song));
-      }
-    );
-
     return {
-      getArtists,
       formatTime,
       playSong,
-      nomalizeSongs,
     };
   },
 };
