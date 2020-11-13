@@ -29,10 +29,9 @@
     </div>
   </div>
   <pager
-    :currentPage="currentPage"
+    :current-page="currentPage"
     @current-page="currentPageHandler"
-    :pageCount="Math.ceil(commentsTotal / 20)"
-    :pagerCount="7"
+    :page-count="Math.ceil(commentsTotal / pageSize)"
   />
 </template>
 
@@ -76,6 +75,7 @@ export default {
     const store = useStore();
 
     const currentPage = ref(1);
+    const pageSize = ref(20);
 
     const status = computed(() => store.state.user.status);
 
@@ -99,7 +99,7 @@ export default {
     );
 
     const getComments = async (id, page) => {
-      const { comments, hotComments, total } = await commentRequest(id, 20, page);
+      const { comments, hotComments, total } = await commentRequest(id, pageSize.value, page);
 
       data.comments = comments;
       data.hotComments = hotComments;
@@ -143,6 +143,7 @@ export default {
       data,
       commentsTotal,
       currentPage,
+      pageSize,
       currentPageHandler,
       commentLike,
       comment,

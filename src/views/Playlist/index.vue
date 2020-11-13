@@ -20,16 +20,15 @@
     </div>
 
     <pager
-      :currentPage="currentPage"
+      :current-page="currentPage"
       @current-page="currentPageHandler"
-      :pageCount="Math.ceil(playlistTotal / 20)"
-      :pagerCount="7"
+      :page-count="Math.ceil(playlistTotal / pageSize)"
     />
   </div>
 </template>
 
 <script>
-import { requestPlaylitCatlist, requestTopPlaylistHighquality, requestTopPlaylist } from "@/api";
+import { requestPlaylitCatlist, requestTopPlaylist } from "@/api";
 import { onMounted, reactive, ref } from "vue";
 import playlistCard from "@/components/playlist-card";
 import { formatPlayCount } from "@/utils";
@@ -45,6 +44,7 @@ export default {
 
     const playlistTotal = ref(0);
     const currentPage = ref(1);
+    const pageSize = ref(50);
     const category = ref("全部");
 
     const pager = ref(null);
@@ -62,12 +62,9 @@ export default {
     };
 
     const getTopPlaylist = async (page) => {
-      const { playlists, total } = await requestTopPlaylist(category.value, 50, page);
+      const { playlists, total } = await requestTopPlaylist(category.value, pageSize.value, page);
       data.playlist = playlists;
-      // 首次请求分类歌单设置总数
-      if (page < 2) {
-        playlistTotal.value = total;
-      }
+      playlistTotal.value = total;
     };
 
     const toggleTag = (e) => {
@@ -91,6 +88,7 @@ export default {
       data,
       playlistTotal,
       currentPage,
+      pageSize,
       category,
 
       toggleTag,

@@ -3,12 +3,20 @@
     <div></div>
     <div class="right">
       <div class="search-wrap">
-        <input class="search" v-model="keyWord" @input="changeKeyWord" type="text" placeholder="搜索" />
-        <div class="result-panel" v-if="resultPanelShow">
-          <div class="sub-panel" v-for="item in data.result">
-            <div class="sub-panel-name">{{ resultMap[item.key] }}</div>
-            <ul class="list">
-              <li class="name" v-for="content in item.content" @click="clickHandler(content, item.key)">
+        <input
+          class="search-input no-show"
+          v-model="keyWord"
+          @input="onInput"
+          @focus="onFocus"
+          @keypress.enter="onEnter"
+          type="text"
+          placeholder="搜索"
+        />
+        <div class="result-panel no-show" v-show="searchPanelShow">
+          <div class="sub-panel no-show" v-for="item in data.result">
+            <div class="sub-panel-name no-show">{{ resultMap[item.key] }}</div>
+            <ul class="list no-show">
+              <li class="name no-show" v-for="content in item.content" @click="clickHandler(content, item.key)">
                 {{ content.name }}
               </li>
             </ul>
@@ -51,12 +59,12 @@ export default {
       result: {},
     });
 
-    const resultPanelShow = ref(false);
+    const searchPanelShow = ref(false);
     const keyWord = ref("");
 
     const profile = computed(() => store.state.user.profile);
 
-    const changeKeyWord = debounce(async (e) => {
+    const getSearchSuggest = debounce(async (e) => {
       if (e.target.value === "") return;
       const { result } = await requestSearchSuggest(e.target.value);
       let res = [];
@@ -67,9 +75,19 @@ export default {
           }
         }
         data.result = res;
-        resultPanelShow.value = true;
+        searchPanelShow.value = true;
       }
     }, 500);
+
+    const onInput = getSearchSuggest;
+    const onFocus = getSearchSuggest;
+
+    const onEnter = (e) => {
+      if (e.target.value) {
+        router.push(`/search/${e.target.value}`);
+        e.target.value = "";
+      }
+    };
 
     const clickHandler = async (content, key) => {
       if (key.indexOf("song") > -1) {
@@ -83,17 +101,39 @@ export default {
         router.push(`/${key.slice(0, key.length - 1)}/${content.id}`);
       }
       keyWord.value = "";
-      resultPanelShow.value = false;
+      searchPanelShow.value = false;
     };
+
+    const clickEvent = (e) => {
+      if (e.target.className.indexOf("no-show") > 0) return;
+      searchPanelShow.value = false;
+    };
+
+    const bindClick = () => {
+      document.addEventListener("mousedown", clickEvent);
+    };
+    const removeClick = () => {
+      document.removeEventListener("mousedown", clickEvent);
+    };
+
+    watch(searchPanelShow, (show) => {
+      if (show) {
+        bindClick();
+      } else {
+        removeClick();
+      }
+    });
 
     return {
       data,
       profile,
       keyWord,
-      changeKeyWord,
+      onFocus,
+      onInput,
+      onEnter,
       resultMap,
       clickHandler,
-      resultPanelShow,
+      searchPanelShow,
     };
   },
 };
@@ -122,7 +162,7 @@ export default {
   height: 25px
   background: #ededed
   margin-right: 20px
-.search
+.search-input
   height: 100%
   width: 100%
   padding: 0 20px

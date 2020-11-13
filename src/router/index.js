@@ -9,8 +9,7 @@ const Artists = () => import("@/views/Artists");
 const Album = () => import("@/views/Album");
 const Mvs = () => import("@/views/Mvs");
 const Login = () => import("@/views/Login");
-
-
+const Search = () => import("@/views/Search");
 
 const routes = [
   { path: "/", component: Home },
@@ -23,6 +22,7 @@ const routes = [
   { path: "/playlist", component: Playlist },
   { path: "/Mvs", component: Mvs },
   { path: "/login", component: Login },
+  { path: "/search/:keywords", component: Search },
 ];
 
 const router = createRouter({

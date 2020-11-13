@@ -19,7 +19,10 @@ export default {
   props: {
     // 总页数
     pageCount: Number,
-    pagerCount: Number,
+    pagerCount: {
+      type: Number,
+      default: 7,
+    },
     currentPage: {
       type: Number,
       default: 1,

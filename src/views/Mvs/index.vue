@@ -30,10 +30,9 @@
     </div>
 
     <pager
-      :currentPage="currentPage"
+      :current-page="currentPage"
       @current-page="currentPageHandler"
-      :page-count="Math.ceil(mvsTotal / 50)"
-      :pager-count="7"
+      :page-count="Math.ceil(mvsTotal / pageSize)"
     />
   </div>
 </template>
@@ -68,13 +67,14 @@ export default {
     const mvsTotal = ref(0);
     const pager = ref(null);
     const currentPage = ref(1);
+    const pageSize = ref(40);
 
     const getMvAll = async (page) => {
       const { data: mvs, count } = await requestMvAll(
         areas[data.areasActiveIndex],
         types[data.typesActiveIndex],
         orders[data.ordersActiveIndex],
-        40,
+        pageSize.value,
         page
       );
 
@@ -104,7 +104,7 @@ export default {
       mvsTotal,
       pager,
       currentPage,
-
+      pageSize,
       tagsMap,
 
       currentPageHandler,
