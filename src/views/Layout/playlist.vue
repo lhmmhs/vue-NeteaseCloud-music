@@ -1,6 +1,6 @@
 <template>
   <transition name="fade">
-    <div class="playlist" v-if="playlistShow">
+    <div ref="parent" class="playlist" v-show="playlistShow">
       <div class="playlist-title">播放列表</div>
       <div class="playlist-bar">
         <div class="total">总共{{ playlist.length }}首</div>
@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { computed, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { formatTime } from "@/utils";
 import songTable from "@/components/song-table/table";
@@ -55,6 +55,28 @@ export default {
       }
     );
 
+    const parent = ref(null);
+
+    const clickEvent = (e) => {
+      if (parent.value.contains(e.target)) return;
+      store.commit("music/setPlaylistShow", false);
+    };
+
+    const bindClick = () => {
+      document.addEventListener("mousedown", clickEvent);
+    };
+    const removeClick = () => {
+      document.removeEventListener("mousedown", clickEvent);
+    };
+
+    watch(playlistShow, (show) => {
+      if (show) {
+        bindClick();
+      } else {
+        removeClick();
+      }
+    });
+
     function playSong(song) {
       store.dispatch("music/playSong", song);
     }
@@ -62,7 +84,7 @@ export default {
     return {
       playlist,
       playlistShow,
-
+      parent,
       playSong,
 
       formatTime,

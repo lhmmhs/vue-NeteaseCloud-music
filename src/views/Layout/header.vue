@@ -2,21 +2,21 @@
   <div class="header">
     <div></div>
     <div class="right">
-      <div class="search-wrap">
+      <div ref="parent" class="search-wrap">
         <input
-          class="search-input no-show"
-          v-model="keyWord"
+          class="search-input"
+          v-model="keyWords"
           @input="onInput"
           @focus="onFocus"
           @keypress.enter="onEnter"
           type="text"
           placeholder="搜索"
         />
-        <div class="result-panel no-show" v-show="searchPanelShow">
-          <div class="sub-panel no-show" v-for="item in data.result">
-            <div class="sub-panel-name no-show">{{ resultMap[item.key] }}</div>
-            <ul class="list no-show">
-              <li class="name no-show" v-for="content in item.content" @click="clickHandler(content, item.key)">
+        <div class="result-panel" v-show="searchPanelShow">
+          <div class="sub-panel" v-for="item in data.result">
+            <div class="sub-panel-name">{{ resultMap[item.key] }}</div>
+            <ul class="list">
+              <li class="name" v-for="content in item.content" @click="clickHandler(content, item.key)">
                 {{ content.name }}
               </li>
             </ul>
@@ -60,13 +60,14 @@ export default {
     });
 
     const searchPanelShow = ref(false);
-    const keyWord = ref("");
+    const keyWords = ref("");
+    const parent = ref(null);
 
     const profile = computed(() => store.state.user.profile);
 
     const getSearchSuggest = debounce(async (e) => {
-      if (e.target.value === "") return;
-      const { result } = await requestSearchSuggest(e.target.value);
+      if (keyWords.value === "") return;
+      const { result } = await requestSearchSuggest(keyWords.value);
       let res = [];
       if (result.order) {
         for (let key in result) {
@@ -83,9 +84,10 @@ export default {
     const onFocus = getSearchSuggest;
 
     const onEnter = (e) => {
-      if (e.target.value) {
-        router.push(`/search/${e.target.value}`);
-        e.target.value = "";
+      if (keyWords.value) {
+        router.push(`/search/${keyWords.value}`);
+        keyWords.value = "";
+        searchPanelShow.value = false;
       }
     };
 
@@ -100,12 +102,12 @@ export default {
       } else {
         router.push(`/${key.slice(0, key.length - 1)}/${content.id}`);
       }
-      keyWord.value = "";
+      keyWords.value = "";
       searchPanelShow.value = false;
     };
 
     const clickEvent = (e) => {
-      if (e.target.className.indexOf("no-show") > 0) return;
+      if (parent.value.contains(e.target)) return;
       searchPanelShow.value = false;
     };
 
@@ -127,13 +129,14 @@ export default {
     return {
       data,
       profile,
-      keyWord,
+      keyWords,
       onFocus,
       onInput,
       onEnter,
       resultMap,
       clickHandler,
       searchPanelShow,
+      parent,
     };
   },
 };
