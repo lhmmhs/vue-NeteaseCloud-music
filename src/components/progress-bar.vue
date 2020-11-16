@@ -22,7 +22,7 @@ import { computed, onMounted, ref } from "vue";
 
 export default {
   props: ["disabled", "duration"],
-  emits: ["percent-change"],
+  emits: ["percent-change", "mouse-up"],
   setup(props, { emit }) {
     const progressBarBtn = ref(null);
     const progressBarWrapper = ref(null);
@@ -44,6 +44,7 @@ export default {
     function mouseupHandler(e) {
       if (!props.disabled) return;
       move = false;
+      emit("mouse-up", move);
     }
 
     function mouseleaveHandler(e) {
@@ -76,7 +77,7 @@ export default {
     }
 
     function calcProgressBarCurWidth(currentTime, currentSong) {
-      if (move) return;
+      // if (move) return;
       progressBarCurWidth.value = progressBarWidth * calcPercentByTime(currentTime);
     }
 
@@ -85,7 +86,7 @@ export default {
     }
 
     function calcCurrentTime(width) {
-      emit("percent-change", width / progressBarWidth);
+      emit("percent-change", { percent: width / progressBarWidth, move });
     }
 
     onMounted(() => {

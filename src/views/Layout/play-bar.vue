@@ -29,6 +29,7 @@
         :duration="currentSong.duration"
         :disabled="currentSong.url"
         @percent-change="onPercentChange"
+        @mouse-up="onMouseup"
       />
     </div>
 
@@ -175,6 +176,7 @@ function useToggleMode(store) {
 
 function usePlayer(store) {
   const playerShow = computed(() => store.state.music.playerShow);
+  const currentSong = computed(() => store.state.music.currentSong);
 
   function togglePlayerShow() {
     if (!currentSong.value.url) return;
@@ -191,15 +193,33 @@ function useProgressBar(store, audio) {
   const currentSong = computed(() => store.state.music.currentSong);
   const playing = computed(() => store.state.music.playing);
 
-  function onPercentChange(percent) {
+  function onPercentChange({ percent, move }) {
+    let currentTime = percent * (currentSong.value.duration / 1000);
+
+    if (!playing.value && !move) {
+      audio.value.play();
+    }
+
+    if (move) {
+      store.commit("music/setCurrentTime", currentTime);
+    } else {
+      audio.value.currentTime = currentTime;
+    }
+  }
+
+  function onMouseup(move) {
+    const currentTime = computed(() => store.state.music.currentTime);
+
     if (!playing.value) {
       audio.value.play();
     }
-    audio.value.currentTime = percent * (currentSong.value.duration / 1000);
+
+    audio.value.currentTime = currentTime.value;
   }
 
   return {
     onPercentChange,
+    onMouseup,
   };
 }
 
@@ -223,7 +243,7 @@ export default {
       progressBar
     );
 
-    const { onPercentChange } = useProgressBar(store, audio);
+    const { onPercentChange, onMouseup } = useProgressBar(store, audio);
 
     const { playlistShow, playMode, togglePlaylistShow, togglePlayMode } = useToggleMode(store);
 
@@ -257,6 +277,7 @@ export default {
       togglePlayerShow,
 
       onPercentChange,
+      onMouseup,
 
       formatTime,
     };
