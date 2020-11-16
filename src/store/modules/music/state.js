@@ -7,8 +7,6 @@ export default {
   playing: false,
   // 播放进度
   currentTime: 0,
-  // 移动开关
-  move: false,
   // player show
   playerShow: false,
   // 播放列表
