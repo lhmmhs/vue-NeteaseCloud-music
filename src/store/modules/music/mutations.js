@@ -13,7 +13,11 @@ export default {
     state.playerShow = playerShow;
   },
   setPlaylist(state, song) {
-    state.playlist.unshift(song);
+    if (Array.isArray(song)) {
+      state.playlist = song;
+    } else {
+      state.playlist.unshift(song);
+    }
   },
   setPlaylistShow(state, playlistShow) {
     state.playlistShow = playlistShow;

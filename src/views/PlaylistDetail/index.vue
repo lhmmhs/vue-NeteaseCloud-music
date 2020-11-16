@@ -16,9 +16,8 @@
         <div class="tags" v-if="data.playlistDetail.tags.length">
           标签：{{ (data.playlistDetail.tags || []).map((e) => e).join("/") }}
         </div>
-        <!-- <div class="description">{{description}}</div> -->
         <div class="actions">
-          <btn class="btn" @click="playSong">播放全部</btn>
+          <btn class="btn" @click="playAll">播放全部</btn>
           <btn class="btn" :disabled="profile.userId === data.playlistDetail.userId" @click="subscribe">
             {{ data.playlistDetail.subscribed ? "取消收藏" : "收藏" }}
           </btn>
@@ -80,13 +79,9 @@ export default {
       }
     };
 
-    const playSong = async () => {
-      let songs = data.songs;
-      let i = data.songs.length - 1;
-      for (; i > 0; i--) {
-        store.commit("music/setPlaylist", songs[i]);
-      }
-      store.dispatch("music/playSong", songs[0]);
+    const playAll = async () => {
+      store.commit("music/setPlaylist", data.songs);
+      store.dispatch("music/playSong", data.songs[0]);
     };
 
     onMounted(() => {
@@ -98,7 +93,7 @@ export default {
       formatDate,
       subscribe,
       profile,
-      playSong,
+      playAll,
     };
   },
 };

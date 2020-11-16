@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { requestSearch } from "@/api";
+import { requestSearch, requestSongDetail } from "@/api";
 import { onMounted, reactive, watch } from "vue";
 import { useRoute } from "vue-router";
 import songTable from "@/components/song-table/table";
@@ -76,9 +76,11 @@ export default {
       data.songCount = songCount;
     };
 
-    const playSong = (rawSong) => {
+    const playSong = async (rawSong) => {
       const { id, name, album, artists, duration, mvid } = rawSong;
-      const song = nomalizeSong(id, name, album.artist.img1v1Url, artists, duration, album, mvid);
+      const { songs } = await requestSongDetail(id);
+      const { al } = songs[0];
+      const song = nomalizeSong(id, name, al.picUrl, artists, duration, album, mvid);
       store.dispatch("music/playSong", song);
     };
 
