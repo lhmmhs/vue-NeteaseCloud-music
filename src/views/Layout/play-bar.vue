@@ -60,6 +60,7 @@ import progressBar from "@/components/progress-bar";
 
 function useControls(store, audio) {
   const currentSong = computed(() => store.state.music.currentSong);
+  const currentTime = computed(() => store.state.music.currentTime);
   const playing = computed(() => store.state.music.playing);
 
   const prevSong = computed(() => store.getters["music/prevSong"]);
@@ -71,6 +72,7 @@ function useControls(store, audio) {
     if (playing.value) {
       pause();
     } else {
+      audio.value.currentTime = currentTime.value;
       audio.value.play();
     }
   }
@@ -200,10 +202,6 @@ function useProgressBar(store, audio) {
   }
 
   function onMouseup(e) {
-    let isProgressBarWrap = e.target.className.indexOf("progress-bar-wrap") > -1;
-    // 暂停状态下，点击progress-bar-wrap，不播放
-    if (!playing.value && isProgressBarWrap) return;
-
     const currentTime = computed(() => store.state.music.currentTime);
 
     // 暂停状态下移动按钮后，开始播放
