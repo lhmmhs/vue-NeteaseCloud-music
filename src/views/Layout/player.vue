@@ -83,11 +83,13 @@ export default {
       }
     });
 
-    watch(playerShow, () => {
+    watch(playerShow, (playerShow) => {
       // 每次打开歌词界面，清空旧的dom引用
       // 因为每次打开都需要重新渲染
-      itemRefs = [];
-      poll(scrollToActiveLyric);
+      if (playerShow) {
+        itemRefs = [];
+        poll(scrollToActiveLyric);
+      }
     });
 
     watch(
