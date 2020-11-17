@@ -19,11 +19,16 @@
 
 <script>
 import { computed, onMounted, ref } from "vue";
+import { useStore } from "vuex";
 
 export default {
   props: ["disabled", "duration"],
   emits: ["percent-change", "mouse-up"],
   setup(props, { emit }) {
+    const store = useStore();
+
+    const move = computed(() => store.state.music.move);
+
     const progressBarBtn = ref(null);
     const progressBarWrapper = ref(null);
     const progressBar = ref(null);
@@ -32,27 +37,26 @@ export default {
     let progressBarWidth = 0;
     let btnClientX = 0;
     let btnOffsetLeft = 0;
-    let move = false;
 
     function mousedownHandler(e) {
       if (!props.disabled) return;
-      move = true;
+      store.commit("music/setMove", true);
       btnClientX = e.clientX;
       btnOffsetLeft = e.target.offsetLeft;
     }
 
     function mouseupHandler(e) {
       if (!props.disabled) return;
-      move = false;
-      emit("mouse-up", move);
+      store.commit("music/setMove", false);
+      emit("mouse-up", e);
     }
 
     function mouseleaveHandler(e) {
-      move = false;
+      store.commit("music/setMove", false);
     }
 
     function mousemoveHandler(e) {
-      if (!move) return;
+      if (!move.value) return;
       let clientX = e.clientX;
       let clacValue = clientX - (btnClientX - btnOffsetLeft);
       if (clacValue < 0) clacValue = 0;
@@ -77,7 +81,9 @@ export default {
     }
 
     function calcProgressBarCurWidth(currentTime, currentSong) {
-      // if (move) return;
+      // 歌曲播放状态移动状态同时存在，都会执行该函数
+      // 在移动情况直接禁止执行，防止进度条乱跳bug
+      if (move.value) return;
       progressBarCurWidth.value = progressBarWidth * calcPercentByTime(currentTime);
     }
 
@@ -86,7 +92,7 @@ export default {
     }
 
     function calcCurrentTime(width) {
-      emit("percent-change", { percent: width / progressBarWidth, move });
+      emit("percent-change", width / progressBarWidth);
     }
 
     onMounted(() => {

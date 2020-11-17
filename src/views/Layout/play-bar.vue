@@ -111,7 +111,6 @@ function useAudioEvents(store, audio, next, progressBar) {
   }
 
   function endedHandler(e) {
-    // 歌曲播放结束后
     next();
   }
 
@@ -129,9 +128,7 @@ function useAudioEvents(store, audio, next, progressBar) {
     store.commit("music/setPlayingState", true);
   }
 
-  function errorHandler(e) {
-    // 播放歌曲失败
-  }
+  function errorHandler(e) {}
 
   watch(currentSong, () => {
     audio.value.currentTime = 0;
@@ -191,26 +188,29 @@ function usePlayer(store) {
 
 function useProgressBar(store, audio) {
   const currentSong = computed(() => store.state.music.currentSong);
+  const move = computed(() => store.state.music.move);
   const playing = computed(() => store.state.music.playing);
 
-  function onPercentChange({ percent, move }) {
+  function onPercentChange(percent) {
     let currentTime = percent * (currentSong.value.duration / 1000);
 
-    if (!playing.value && !move) {
-      audio.value.play();
-    }
-
-    if (move) {
-      store.commit("music/setCurrentTime", currentTime);
+    if (move.value) {
+      store.commit("music/setCurrentTimeByMove", currentTime);
     } else {
       audio.value.currentTime = currentTime;
     }
   }
 
-  function onMouseup(move) {
+  function onMouseup(e) {
+    let isProgressBarWrap = e.target.className.indexOf("progress-bar-wrap") > -1;
+    // 暂停状态下，点击progress-bar-wrap，不播放
+    if (!playing.value && isProgressBarWrap) return;
+
     const currentTime = computed(() => store.state.music.currentTime);
 
-    if (!playing.value) {
+    // 暂停状态下移动按钮后，开始播放
+    // 暂停状态下，点击进度条，开始播放
+    if (!playing.value && !move.value) {
       audio.value.play();
     }
 

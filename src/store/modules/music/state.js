@@ -15,4 +15,6 @@ export default {
   playlistShow: false,
   // 播放模式
   playMode: playModeMap.sequence.code,
+  // 移动开关
+  move: false,
 };

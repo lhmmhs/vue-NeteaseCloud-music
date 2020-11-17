@@ -6,8 +6,16 @@ export default {
     state.playing = playing;
   },
   setCurrentTime(state, time) {
+    // 歌曲播放状态移动状态同时存在，都会执行该mutation
+    // 在移动情况直接禁止执行，防止歌曲当前时间乱跳bug
     if (state.move) return;
     state.currentTime = time;
+  },
+  setCurrentTimeByMove(state, time) {
+    state.currentTime = time;
+  },
+  setMove(state, move) {
+    state.move = move;
   },
   setPlayerShow(state, playerShow) {
     state.playerShow = playerShow;
