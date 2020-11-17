@@ -5,9 +5,6 @@ export default class ReactiveListener {
     this.error = error;
     this.loading = loading;
 
-    this.naturalHeight = 0;
-    this.naturalWidth = 0;
-
     this.options = options;
 
     this.rect = null;

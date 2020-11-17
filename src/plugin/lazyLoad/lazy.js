@@ -1,15 +1,4 @@
-import {
-  inBrowser,
-  remove,
-  find,
-  _,
-  throttle,
-  supportWebp,
-  scrollParent,
-  getDPR,
-  hasIntersectionObserver,
-  modeType,
-} from "./util";
+import { inBrowser, find, _, throttle, supportWebp, scrollParent, hasIntersectionObserver, modeType } from "./util";
 
 import ReactiveListener from "./listener";
 const DEFAULT_EVENTS = ["scroll", "wheel", "mousewheel", "resize", "animationend", "transitionend", "touchmove"];
@@ -25,16 +14,12 @@ export default function (app) {
       loading,
       attempt,
       silent = true,
-      scale,
       listenEvents,
-      hasbind,
-      filter,
-      adapter,
       observer,
       observerOptions,
     }) {
       this.mode = modeType.event;
-      this.ListenerQueue = [];
+      this.ListenerMap = new Map();
       this.TargetIndex = 0;
       this.TargetQueue = [];
       this.options = {
@@ -46,12 +31,8 @@ export default function (app) {
         // error: error || DEFAULT_URL,
         // loading: loading || DEFAULT_URL,
         attempt: attempt || 3,
-        scale: scale || getDPR(scale),
         ListenEvents: listenEvents || DEFAULT_EVENTS,
-        hasbind: false,
         supportWebp: supportWebp(),
-        filter: filter || {},
-        adapter: adapter || {},
         observer: !!observer,
       };
       this.lazyLoadHandler = throttle(this._lazyLoadHandler.bind(this), this.options.throttleWait);
@@ -87,7 +68,7 @@ export default function (app) {
         this._addListenerTarget($parent);
       }
 
-      this.ListenerQueue.push(newListener);
+      this.ListenerMap.set(el, newListener);
       this.lazyLoadHandler();
     }
 
@@ -99,8 +80,7 @@ export default function (app) {
      */
     update(el, binding, vnode) {
       let { src, loading, error } = this._valueFormatter(binding.value);
-
-      const exist = find(this.ListenerQueue, (item) => item.el === el);
+      const exist = this.ListenerMap.get(el);
       if (!exist) {
         this.add(el, binding, vnode);
       } else {
@@ -125,11 +105,11 @@ export default function (app) {
     remove(el) {
       if (!el) return;
       this._observer && this._observer.unobserve(el);
-      const existItem = find(this.ListenerQueue, (item) => item.el === el);
+      const existItem = this.ListenerMap.get(el);
       if (existItem) {
         this._removeListenerTarget(window);
         this._removeListenerTarget(existItem.$parent);
-        remove(this.ListenerQueue, existItem);
+        this.ListenerMap.delete(el);
         existItem.$destroy();
       }
     }
@@ -207,7 +187,7 @@ export default function (app) {
      */
     _lazyLoadHandler() {
       const freeList = [];
-      this.ListenerQueue.forEach((listener, index) => {
+      this.ListenerMap.forEach((listener) => {
         if (!listener.el || !listener.el.parentNode) {
           freeList.push(listener);
         }
@@ -216,7 +196,7 @@ export default function (app) {
         listener.load();
       });
       freeList.forEach((item) => {
-        remove(this.ListenerQueue, item);
+        this.ListenerMap.delete(el);
         item.$destroy();
       });
     }
@@ -229,11 +209,6 @@ export default function (app) {
     _initIntersectionObserver() {
       if (!hasIntersectionObserver) return;
       this._observer = new IntersectionObserver(this._observerHandler.bind(this));
-      // if (this.ListenerQueue.length) {
-      //   this.ListenerQueue.forEach((listener) => {
-      //     this._observer.observe(listener.el);
-      //   });
-      // }
     }
 
     /**
@@ -243,14 +218,11 @@ export default function (app) {
     _observerHandler(entries, observer) {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          this.ListenerQueue.forEach((listener) => {
-            if (listener.el === entry.target) {
-              if (listener.state.loaded) {
-                return this._observer.unobserve(listener.el);
-              }
-              listener.load();
-            }
-          });
+          let listener = this.ListenerMap.get(entry.target);
+          if (listener.state.loaded) {
+            return this._observer.unobserve(listener.el);
+          }
+          listener.load();
         }
       });
     }

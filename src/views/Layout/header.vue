@@ -50,7 +50,7 @@ const resultMap = {
   songs: "单曲",
 };
 
-function useSearch(sotre, router) {
+function useSearch(store, router) {
   const data = reactive({
     result: {},
   });
