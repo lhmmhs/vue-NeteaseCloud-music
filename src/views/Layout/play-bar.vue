@@ -65,8 +65,6 @@ function useControls(store, audio) {
   const prevSong = computed(() => store.getters["music/prevSong"]);
   const nextSong = computed(() => store.getters["music/nextSong"]);
 
-  watch(playing, (playing) => {});
-
   function play() {
     if (!currentSong.value.url) return;
 

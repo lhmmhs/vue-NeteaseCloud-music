@@ -5,7 +5,7 @@
       <span class="count">相关结果共{{ data.songCount }}条</span>
     </div>
 
-    <song-table :tableData="data.songs" @row-dblclick="playSong">
+    <song-table v-if="data.songCount" :tableData="data.songs" @row-dblclick="playSong">
       <song-table-column type="index" width="40px" />
       <song-table-column label="音乐标题" width="40%">
         <template v-slot:default="slotProps">
@@ -27,6 +27,7 @@
         </template>
       </song-table-column>
     </song-table>
+    <div v-else>暂无相关数据</div>
 
     <pager
       :current-page="data.currentPage"

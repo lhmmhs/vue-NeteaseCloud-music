@@ -40,7 +40,6 @@ import { ref, computed, watch, onMounted, reactive, nextTick } from "vue";
 import { useStore } from "vuex";
 import { formatTime } from "@/utils";
 import comments from "@/components/comments";
-// import scroller from "@/components/scroller";
 import { lyricParser, mergeLrcTlyric } from "@/utils";
 import { useRoute } from "vue-router";
 import { requestLyric } from "@/api";
@@ -65,7 +64,6 @@ export default {
     const playerShow = computed(() => store.state.music.playerShow);
     const playing = computed(() => store.state.music.playing);
     const currentTime = computed(() => store.state.music.currentTime);
-    const move = computed(() => store.state.music.move);
 
     const activeLyricIndex = computed(() => {
       let res = [];

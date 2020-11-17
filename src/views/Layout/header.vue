@@ -2,7 +2,7 @@
   <div class="header">
     <div></div>
     <div class="right">
-      <div ref="parent" class="search-wrap">
+      <div ref="resultPanelParent" class="search-wrap">
         <input
           class="search-input"
           v-model="keyWords"
@@ -50,93 +50,121 @@ const resultMap = {
   songs: "单曲",
 };
 
+function useSearch(sotre, router) {
+  const data = reactive({
+    result: {},
+  });
+
+  const searchPanelShow = ref(false);
+  const keyWords = ref("");
+
+  const getSearchSuggest = debounce(async (e) => {
+    if (keyWords.value === "") {
+      return (searchPanelShow.value = false);
+    }
+    const { result } = await requestSearchSuggest(keyWords.value);
+    let res = [];
+    if (result.order) {
+      for (let key in result) {
+        if (key !== "order") {
+          res.push({ key, content: result[key] });
+        }
+      }
+      data.result = res;
+      searchPanelShow.value = true;
+    }
+  }, 500);
+
+  const onInput = getSearchSuggest;
+  const onFocus = getSearchSuggest;
+
+  const onEnter = (e) => {
+    if (keyWords.value) {
+      router.push(`/search/${keyWords.value}`);
+      keyWords.value = "";
+      searchPanelShow.value = false;
+    }
+  };
+
+  const clickHandler = async (content, key) => {
+    if (key.indexOf("song") > -1) {
+      const { id, name, mvid, artists, duration, album } = content;
+      const { songs } = await requestSongDetail(id);
+      const { al } = songs[0];
+      const song = nomalizeSong(id, name, al.picUrl, artists, duration, album, mvid);
+
+      store.dispatch("music/playSong", song);
+    } else {
+      router.push(`/${key.slice(0, key.length - 1)}/${content.id}`);
+    }
+    keyWords.value = "";
+    searchPanelShow.value = false;
+  };
+
+  return {
+    data,
+    searchPanelShow,
+    keyWords,
+    onInput,
+    onFocus,
+    onEnter,
+    clickHandler,
+  };
+}
+
+function useTogglePanelShow(searchPanelShow) {
+  const resultPanelParent = ref(null);
+
+  const clickEvent = (e) => {
+    if (resultPanelParent.value.contains(e.target)) return;
+    searchPanelShow.value = false;
+  };
+
+  const bindClick = () => {
+    document.addEventListener("mousedown", clickEvent);
+  };
+  const removeClick = () => {
+    document.removeEventListener("mousedown", clickEvent);
+  };
+
+  watch(searchPanelShow, (show) => {
+    if (show) {
+      bindClick();
+    } else {
+      removeClick();
+    }
+  });
+
+  return {
+    resultPanelParent,
+  };
+}
+
 export default {
   setup() {
     const router = useRouter();
     const store = useStore();
 
-    const data = reactive({
-      result: {},
-    });
-
-    const searchPanelShow = ref(false);
-    const keyWords = ref("");
-    const parent = ref(null);
-
     const profile = computed(() => store.state.user.profile);
 
-    const getSearchSuggest = debounce(async (e) => {
-      if (keyWords.value === "") return;
-      const { result } = await requestSearchSuggest(keyWords.value);
-      let res = [];
-      if (result.order) {
-        for (let key in result) {
-          if (key !== "order") {
-            res.push({ key, content: result[key] });
-          }
-        }
-        data.result = res;
-        searchPanelShow.value = true;
-      }
-    }, 500);
+    const { data, searchPanelShow, keyWords, onInput, onFocus, onEnter, clickHandler } = useSearch(store, router);
 
-    const onInput = getSearchSuggest;
-    const onFocus = getSearchSuggest;
-
-    const onEnter = (e) => {
-      if (keyWords.value) {
-        router.push(`/search/${keyWords.value}`);
-        keyWords.value = "";
-        searchPanelShow.value = false;
-      }
-    };
-
-    const clickHandler = async (content, key) => {
-      if (key.indexOf("song") > -1) {
-        const { id, name, mvid, artists, duration, album } = content;
-        const { songs } = await requestSongDetail(id);
-        const { al } = songs[0];
-        const song = nomalizeSong(id, name, al.picUrl, artists, duration, album, mvid);
-
-        store.dispatch("music/playSong", song);
-      } else {
-        router.push(`/${key.slice(0, key.length - 1)}/${content.id}`);
-      }
-      keyWords.value = "";
-      searchPanelShow.value = false;
-    };
-
-    const clickEvent = (e) => {
-      if (parent.value.contains(e.target)) return;
-      searchPanelShow.value = false;
-    };
-
-    const bindClick = () => {
-      document.addEventListener("mousedown", clickEvent);
-    };
-    const removeClick = () => {
-      document.removeEventListener("mousedown", clickEvent);
-    };
-
-    watch(searchPanelShow, (show) => {
-      if (show) {
-        bindClick();
-      } else {
-        removeClick();
-      }
-    });
+    const { resultPanelParent } = useTogglePanelShow(searchPanelShow);
 
     return {
-      data,
       profile,
+
+      resultMap,
+
+      data,
+      searchPanelShow,
       keyWords,
       onFocus,
       onInput,
       onEnter,
-      resultMap,
       clickHandler,
-      searchPanelShow,
-      parent,
+
+      resultPanelParent,
     };
   },
 };
