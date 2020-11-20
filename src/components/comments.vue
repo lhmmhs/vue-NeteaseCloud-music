@@ -11,21 +11,11 @@
 
     <div class="list" v-if="data.hotComments && data.hotComments.length">
       <h3 class="title">精彩评论</h3>
-      <comment
-        v-for="comment in data.hotComments"
-        :comment="comment"
-        :id="comment.commentId"
-        @like="commentLike(comment)"
-      />
+      <comment v-for="comment in data.hotComments" :comment="comment" @like="commentLike(comment)" />
     </div>
     <div class="list" v-if="data.comments && data.comments.length">
       <h3 class="title">最新评论（{{ commentsTotal }}）</h3>
-      <comment
-        v-for="comment in data.comments"
-        :comment="comment"
-        :id="comment.commentId"
-        @like="commentLike(comment)"
-      />
+      <comment v-for="comment in data.comments" :comment="comment" @like="commentLike(comment)" />
     </div>
   </div>
   <pager

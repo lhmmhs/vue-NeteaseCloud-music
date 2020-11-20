@@ -56,9 +56,11 @@ export default {
     );
 
     const parent = ref(null);
+    const playBar = document.querySelector(".play-bar");
 
     const clickEvent = (e) => {
       if (parent.value.contains(e.target)) return;
+      if (playBar.contains(e.target)) return;
       store.commit("music/setPlaylistShow", false);
     };
 

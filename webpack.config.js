@@ -51,13 +51,8 @@ module.exports = {
     splitChunks: {
       cacheGroups: {
         vendor: {
-          test: /[\\/]node_modules[\\/](@vue|vue-router|vuex)[\\/]/,
+          test: /[\\/]node_modules[\\/](@vue|vue-router|vuex|axios)[\\/]/,
           name: "vendor",
-          chunks: "all",
-        },
-        axios: {
-          test: /[\\/]node_modules[\\/](axios)[\\/]/,
-          name: "axios",
           chunks: "all",
         },
         betterScroll: {
