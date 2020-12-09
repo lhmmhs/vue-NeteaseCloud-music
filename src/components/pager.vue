@@ -35,12 +35,6 @@ export default {
       showNextMore: false,
     });
 
-    const test = computed(() => {
-      console.log("Test");
-
-      return props.currentPage + 1;
-    });
-
     // computed
     const pagers = computed(() => {
       const pagerCount = props.pagerCount;

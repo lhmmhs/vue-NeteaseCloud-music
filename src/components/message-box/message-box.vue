@@ -16,16 +16,21 @@
 
 <script>
 import { ref } from "vue";
+import btn from "@/components/button";
+
 export default {
+  components: { btn },
   props: {
     title: String,
     message: String,
+    callback: Function,
   },
-  setup() {
+  setup(props) {
     const show = ref(false);
 
     const onClick = () => {
       show.value = false;
+      props.callback && props.callback();
     };
 
     return {
@@ -50,5 +55,20 @@ export default {
   background: rgba(0, 0, 0, 0.5)
 .message-box
   width: 420px
+  padding-bottom: 10px
+  border: 1px solid #ebeef5
+  border-radius: 4px
   background: #fff
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)
+.message-box-header
+  padding: 15px 15px 10px
+  font-size: 18px
+  line-height: 1
+.message-box-content
+  padding: 15px 10px
+  font-size: 14px
+  line-height: 24px
+.message-box-footer
+  padding: 5px 15px 0
+  text-align: right
 </style>
