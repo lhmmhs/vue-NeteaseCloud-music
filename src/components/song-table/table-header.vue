@@ -1,6 +1,6 @@
 
 <script>
-import { h } from "vue";
+import { renderHeader } from "./render-helper";
 
 export default {
   props: ["columns"],
@@ -10,7 +10,6 @@ export default {
         <tr>
           {props.columns.map((vnode) => {
             const { width } = vnode.props;
-            const { renderHeader } = vnode.type.setup();
             return <th style={{ width }}>{renderHeader.call(vnode)}</th>;
           })}
         </tr>

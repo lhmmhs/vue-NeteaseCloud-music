@@ -21,6 +21,16 @@ export default {
     state.playerShow = playerShow;
   },
   setPlaylist(state, song) {
+    if (typeof song === "number") {
+      state.playlist.forEach((item, index) => {
+        if (item.id === song) {
+          state.playlist.splice(index, 1);
+        }
+      });
+
+      return;
+    }
+
     if (Array.isArray(song)) {
       state.playlist = song;
     } else {

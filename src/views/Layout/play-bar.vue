@@ -55,8 +55,9 @@
 <script>
 import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { useStore } from "vuex";
-import { formatTime, playModeMap } from "@/utils";
+import { formatTime, playModeMap, isEmpty } from "@/utils";
 import progressBar from "@/components/progress-bar";
+import messageBox from "@/components/message-box";
 
 function useControls(store, audio) {
   const currentSong = computed(() => store.state.music.currentSong);
@@ -105,6 +106,7 @@ function useControls(store, audio) {
 
 function useAudioEvents(store, audio, next, progressBar) {
   const currentSong = computed(() => store.state.music.currentSong);
+  const playlist = computed(() => store.state.music.playlist);
 
   function canplayHandler(e) {
     store.commit("music/setPlayingState", true);
@@ -130,9 +132,26 @@ function useAudioEvents(store, audio, next, progressBar) {
 
   function errorHandler(e) {}
 
-  watch(currentSong, () => {
+  watch(currentSong, async (currentSong) => {
+    if (isEmpty(currentSong)) return;
+
     audio.value.currentTime = 0;
-    audio.value.play();
+    try {
+      await audio.value.play();
+    } catch (e) {
+      messageBox({
+        title: "提示",
+        message: `VIP歌曲`,
+        callback: () => {
+          store.commit("music/setPlaylist", currentSong.id);
+          if (playlist.value.length) {
+            next();
+          } else {
+            store.commit("music/setCurrentSong", {});
+          }
+        },
+      });
+    }
   });
 
   return {

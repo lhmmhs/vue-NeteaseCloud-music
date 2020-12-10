@@ -64,3 +64,10 @@ export function formatTime(duration) {
 export function songUrl(id) {
   return `https://music.163.com/song/media/outer/url?id=${id}.mp3`;
 }
+
+export function isEmpty(o) {
+  for (let k in o) {
+    return false;
+  }
+  return true;
+}

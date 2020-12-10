@@ -1,5 +1,7 @@
 
 <script>
+import { renderCell } from "./render-helper";
+
 export default {
   props: ["columns", "data"],
   emits: ["row-dblclick"],
@@ -19,7 +21,6 @@ export default {
           <tr class="row" onDblclick={dblclick.bind(null, song)}>
             {props.columns.map((vnode) => {
               const { width } = vnode.props;
-              const { renderCell } = vnode.type.setup();
               return (
                 <td class="column" style={{ width }}>
                   {renderCell.call(vnode, song, index)}

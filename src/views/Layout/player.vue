@@ -40,7 +40,7 @@ import { ref, computed, watch, onMounted, reactive, nextTick } from "vue";
 import { useStore } from "vuex";
 import { formatTime } from "@/utils";
 import comments from "@/components/comments";
-import { lyricParser, mergeLrcTlyric } from "@/utils";
+import { lyricParser, mergeLrcTlyric, isEmpty } from "@/utils";
 import { useRoute } from "vue-router";
 import { requestLyric } from "@/api";
 import { defineAsyncComponent } from "vue";
@@ -72,7 +72,7 @@ export default {
     });
 
     watch(currentSong, async (newSong, prevSong) => {
-      if (newSong.id === prevSong.id) return;
+      if (isEmpty(newSong) || newSong.id === prevSong.id) return;
 
       const lyric = await requestLyric(newSong.id);
       if (lyric.lrc) {

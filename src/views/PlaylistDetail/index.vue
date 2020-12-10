@@ -80,7 +80,7 @@ export default {
     };
 
     const playAll = async () => {
-      store.commit("music/setPlaylist", data.songs);
+      store.commit("music/setPlaylist", [...data.songs]);
       store.dispatch("music/playSong", data.songs[0]);
     };
 
