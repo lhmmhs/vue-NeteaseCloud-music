@@ -29,7 +29,7 @@
             <img class="avatar" :src="`${profile.avatarUrl}?param=30y30`" />
           </router-link>
         </div>
-        <router-link v-else to="/login" class="login">登录</router-link>
+        <btn @click="login">登录</btn>
       </div>
     </div>
   </div>
@@ -42,6 +42,7 @@ import { requestSearchSuggest, requestSongDetail } from "@/api";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { nomalizeSong } from "@/utils";
+import btn from "@/components/button";
 
 const resultMap = {
   albums: "专辑",
@@ -140,7 +141,18 @@ function useTogglePanelShow(searchPanelShow) {
   };
 }
 
+function useLogin(store) {
+  const login = () => {
+    store.commit("setLogin", true);
+  };
+
+  return {
+    login,
+  };
+}
+
 export default {
+  components: { btn },
   setup() {
     const router = useRouter();
     const store = useStore();
@@ -150,6 +162,8 @@ export default {
     const { data, searchPanelShow, keyWords, onInput, onFocus, onEnter, clickHandler } = useSearch(store, router);
 
     const { resultPanelParent } = useTogglePanelShow(searchPanelShow);
+
+    const { login } = useLogin(store);
 
     return {
       profile,
@@ -165,6 +179,8 @@ export default {
       clickHandler,
 
       resultPanelParent,
+
+      login,
     };
   },
 };
@@ -232,9 +248,4 @@ export default {
   height: 30px
   border-radius: 50%
   overflow: hidden
-.login
-  display: inline-block
-  padding: 2px 4px
-  font-size: 13px
-  cursor: pointer
 </style>

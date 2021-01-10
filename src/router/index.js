@@ -8,7 +8,6 @@ const Artist = () => import("@/views/Artist");
 const Artists = () => import("@/views/Artists");
 const Album = () => import("@/views/Album");
 const Mvs = () => import("@/views/Mvs");
-const Login = () => import("@/views/Login");
 const Search = () => import("@/views/Search");
 
 const routes = [
@@ -21,7 +20,6 @@ const routes = [
   { path: "/album/:id", component: Album },
   { path: "/playlist", component: Playlist },
   { path: "/Mvs", component: Mvs },
-  { path: "/login", component: Login },
   { path: "/search/:keywords", component: Search },
 ];
 

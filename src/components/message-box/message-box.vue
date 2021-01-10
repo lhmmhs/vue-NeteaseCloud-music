@@ -51,7 +51,7 @@ export default {
   right: 0
   bottom: 0
   top: 0
-  z-index: 10
+  z-index: 15
   background: rgba(0, 0, 0, 0.5)
 .message-box
   width: 420px
