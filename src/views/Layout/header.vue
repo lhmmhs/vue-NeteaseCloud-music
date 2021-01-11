@@ -28,8 +28,8 @@
           <router-link :to="`/user/${profile.userId}`">
             <img class="avatar" :src="`${profile.avatarUrl}?param=30y30`" />
           </router-link>
+          <btn @click="login">登录</btn>
         </div>
-        <btn @click="login">登录</btn>
       </div>
     </div>
   </div>
@@ -60,6 +60,8 @@ function useSearch(store, router) {
   const keyWords = ref("");
 
   const getSearchSuggest = debounce(async (e) => {
+    if (e.target.composing) return;
+
     if (keyWords.value === "") {
       return (searchPanelShow.value = false);
     }

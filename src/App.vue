@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import layout from "@/views/layout";
+import layout from "@/views/Layout";
 import { requestLoginStatus } from "@/api";
 import { useStore } from "vuex";
 
@@ -13,7 +13,14 @@ export default {
     const store = useStore();
 
     const getLoginStatus = async () => {
-      const { code, profile } = await requestLoginStatus();
+      console.log(navigator.userAgent);
+      // mac
+      const {
+        data: { code, profile },
+      } = await requestLoginStatus();
+
+      // win
+      // const { code, profile } = await requestLoginStatus();
 
       if (code === 200) {
         store.commit("user/setProfile", profile);

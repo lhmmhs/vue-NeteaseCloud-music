@@ -21,9 +21,12 @@
 import { watch, ref } from "vue";
 import { requestLoginCellphone } from "@/api";
 import message from "@/components/message-box";
+import { useStore } from "vuex";
 
 export default {
   setup() {
+    const store = useStore();
+
     const phone = ref("");
     const password = ref("");
 
